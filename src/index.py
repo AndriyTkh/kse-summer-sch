@@ -58,14 +58,13 @@ def expand_alerts_to_grid(grid: pd.DataFrame, alerts: pd.DataFrame) -> pd.DataFr
         return out
 
     step = pd.Timedelta(config.GRID_FREQ)
-    obl = out.index.get_level_values("oblast")
     ts_vals = out.index.get_level_values("ts_utc").values   # datetime64[ns] UTC
-    pos = np.arange(n)
-    # Per oblast: absolute positions + its sorted hour array (one O(n) pass per oblast).
-    blocks = {}
-    for ob in pd.unique(obl):
-        m = obl == ob
-        blocks[ob] = (pos[m], ts_vals[m])
+    # Per oblast: positional block + its sorted hour array. groupby.indices is one
+    # C-level pass and dtype-agnostic; a per-oblast `obl == ob` mask is O(oblasts*n)
+    # and degrades to a slow scalar loop when the oblast level is pandas StringDtype.
+    # Grid is sorted (oblast, ts), so each block's positions/hours are already ascending.
+    blocks = {ob: (bpos, ts_vals[bpos])
+              for ob, bpos in out.groupby(level="oblast", sort=False).indices.items()}
 
     for row in alerts.itertuples(index=False):
         block = blocks.get(row.oblast)
