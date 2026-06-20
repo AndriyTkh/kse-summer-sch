@@ -16,7 +16,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from src import config, evaluate, features, index, loaders, model_b
+from src import config, evaluate, features, index, loaders, model_a, model_b
 
 
 def main() -> None:
@@ -85,6 +85,18 @@ def main() -> None:
     ax2, table = evaluate.oblast_horizon_heatmap(probs)
     ax2.figure.savefig(config.ARTIFACTS_DIR / "heatmap.png", bbox_inches="tight", dpi=120)
     plt.close(ax2.figure)
+
+    # Model A (Prophet daily baseline) + B-vs-A: B must win short horizon (DoD).
+    a_pred = model_a.baseline_for_grid(train_fit, test)
+    y_true = pd.DataFrame(
+        {h: model_b.make_target(test, h).reindex(test.index) for h in config.HORIZONS}
+    )
+    cmp = evaluate.compare_b_vs_a(probs, a_pred, y_true)
+    print(f"\nB vs A (Prophet) PR-AUC  [{time.time()-t0:.0f}s]")
+    print(f"{'horizon':<8}{'B':>8}{'A':>8}{'lift':>7}")
+    for h in config.HORIZONS:
+        r = cmp.loc[h]
+        print(f"{h:<8}{r['pr_auc_b']:>8.3f}{r['pr_auc_a']:>8.3f}{r['lift']:>7.2f}")
 
     print(f"\nartifacts -> {config.ARTIFACTS_DIR}  [total {time.time()-t0:.0f}s]")
 
