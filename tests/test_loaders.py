@@ -14,6 +14,14 @@ def test_normalize_oblast_basic():
     assert loaders.normalize_oblast("Kryvyi Rih") == "dnipropetrovska"  # city -> oblast
 
 
+def test_normalize_oblast_canonical_adm1_names():
+    # Sirens file uses full ADM1 names = code + " oblast"; must round-trip to the code.
+    assert loaders.normalize_oblast("Cherkaska oblast") == "cherkaska"
+    assert loaders.normalize_oblast("Kyivska oblast") == "kyivska"
+    assert loaders.normalize_oblast("Ivano-Frankivska oblast") == "ivano-frankivska"
+    assert loaders.normalize_oblast("Kyiv City") == "kyiv-city"
+
+
 def test_normalize_oblast_national_and_unknown():
     assert loaders.normalize_oblast("Ukraine") is None
     assert loaders.normalize_oblast("south") is None
@@ -48,6 +56,20 @@ def test_parse_oblast_list():
 
 # --- real-data smoke (skips if not downloaded) -------------------------------
 _WAVES = config.DATA_DIR / "missile_attacks_daily.csv"
+_ALERTS = config.DATA_DIR / "official_data_en.csv"
+
+
+@pytest.mark.skipif(not _ALERTS.exists(), reason="alerts CSV not downloaded")
+def test_load_alerts_shape_and_geo():
+    a = loaders.load_alerts()
+    assert len(a) > 100_000
+    assert str(a.start_utc.dt.tz) == "UTC" and str(a.end_utc.dt.tz) == "UTC"
+    assert a[["oblast", "start_utc", "end_utc"]].notna().all().all()
+    # every oblast rolls up to a valid ADM1 code; no permanent-siren regions present
+    assert set(a.oblast) <= config.OBLAST_CODE_SET
+    assert {"crimea", "sevastopol"}.isdisjoint(a.oblast)
+    assert (a.end_utc >= a.start_utc).all()             # no negative intervals
+    assert not a.duplicated(["oblast", "start_utc", "end_utc"]).any()
 
 
 @pytest.mark.skipif(not _WAVES.exists(), reason="waves CSV not downloaded")

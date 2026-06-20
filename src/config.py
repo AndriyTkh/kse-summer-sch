@@ -66,6 +66,10 @@ OBLAST_CODES: list[str] = [
     "zhytomyrska",
 ]
 
+# Fast identity lookup: a stripped name that already equals a canonical code
+# (e.g. "Cherkaska oblast" -> "cherkaska") is valid as-is.
+OBLAST_CODE_SET: frozenset[str] = frozenset(OBLAST_CODES)
+
 # Source region name -> ADM1 code (issue #4). Keys are lowercased, " oblast" stripped.
 # Covers the `affected region` vocabulary in the Kaggle wave file + common city aliases.
 # "ukraine" -> None (national marker, not an oblast). Cities fold into their oblast.
@@ -85,6 +89,7 @@ OBLAST_ALIASES: dict[str, str] = {
     "kirovohrad": "kirovohradska",
     "kyiv oblast": "kyivska",
     "kyiv": "kyiv-city",                  # bare "Kyiv" = the city
+    "kyiv city": "kyiv-city",             # sirens file label
     "luhansk": "luhanska",
     "lutsk": "volynska",                  # Lutsk = capital of Volyn
     "lviv": "lvivska",

@@ -41,6 +41,8 @@ def normalize_oblast(name: str) -> str | None:
     if key in config.OBLAST_ALIASES:
         return config.OBLAST_ALIASES[key]
     key = key.removesuffix(" oblast").strip()
+    if key in config.OBLAST_CODE_SET:  # already canonical (e.g. "Cherkaska oblast")
+        return key
     return config.OBLAST_ALIASES.get(key)
 
 
@@ -74,12 +76,40 @@ def _parse_oblast_list(cell) -> list[str]:
 
 
 def load_alerts(path=None) -> pd.DataFrame:
-    """Vadimkin sirens -> tidy alert intervals [oblast, start_utc, end_utc].
+    """Vadimkin OFFICIAL sirens -> tidy alert intervals [oblast, start_utc, end_utc].
 
-    Not yet downloaded (public GitHub). Implement when the file lands; downstream
-    `index.expand_alerts_to_grid` turns these intervals into the hourly target.
+    Source: official_data_en.csv [oblast,raion,hromada,level,started_at,finished_at,source].
+    Timestamps are ALREADY UTC (tz-aware in file) — no Kyiv->UTC conversion here.
+
+    Roll-up to ADM1 (issue #4): an alert at ANY level (oblast/raion/hromada) marks its
+    parent OBLAST as alerting — we read the `oblast` column regardless of `level`.
+    This is forced, not optional: official logging switched to mostly raion-level after
+    Dec 2025, so a `level=='oblast'` filter would leave the target ~all-zero across the
+    whole eval window. Rolling up keeps coverage; the cost is that frontline oblasts with
+    a near-permanent border-raion alert (Kharkivska, Dnipropetrovska) read as oblast-wide
+    "on" for long stretches — real, but a coarse-grain artifact; accepted for MVP.
+
+    Overlapping/duplicate intervals within an oblast are harmless (expand_alerts_to_grid
+    OR-combines cells); exact dups are dropped to shrink the interval set.
+
+    Data limits (documented upstream): coverage starts 2022-03-15 (after WAR_START);
+    Luhansk and Crimea permanent sirens are absent — crimea/sevastopol never appear.
+    Rows with no parseable oblast or no end time are dropped.
+
+    Downstream `index.expand_alerts_to_grid` turns these intervals into the hourly target.
     """
-    raise NotImplementedError("Vadimkin sirens dataset not downloaded yet")
+    path = path or config.DATA_DIR / "official_data_en.csv"
+    df = pd.read_csv(path, usecols=["oblast", "started_at", "finished_at"])
+
+    out = pd.DataFrame({
+        "oblast": df["oblast"].map(normalize_oblast),
+        # File times carry +00:00; parse straight to UTC (utc=True normalizes any offset).
+        "start_utc": pd.to_datetime(df["started_at"], utc=True, errors="coerce"),
+        "end_utc": pd.to_datetime(df["finished_at"], utc=True, errors="coerce"),
+    })
+    out = out.dropna(subset=["oblast", "start_utc", "end_utc"])
+    out = out.drop_duplicates(["oblast", "start_utc", "end_utc"]).reset_index(drop=True)
+    return out
 
 
 def load_massive_attacks(path=None) -> pd.DataFrame:
