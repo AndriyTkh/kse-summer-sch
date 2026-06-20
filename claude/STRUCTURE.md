@@ -77,7 +77,8 @@ Sources:
 ```
 lags / calendar / region
 threat-type channels:  ballistic | air-cruise | sea-cruise | drone | kinzhal
-drone split:           strike (Shahed-136/131) vs decoy (Gerbera)
+drone split:           strike (Shahed-136/131) vs decoy (Gerbera) vs recon (Orlan/ZALA)
+                       (decoy channel empty in current data — see PLAN #8; recon added data-driven)
 launch_place origin:   Engels/Olenya... (structured strategic-aviation signal)
 drone tempo:           daily launch count (feeds A)
 ACLED target-propensity: per-oblast rolling impact, 7-day-lagged (leak-safe)
@@ -113,17 +114,23 @@ kse-summer-sch/
 │   ├── PLAN.md
 │   └── archive/            deprecated PLAN/STRUCTURE versions (only on explicit say-so)
 ├── data/                   raw downloads (gitignored)              [planned]
-├── src/                                                            [planned]
-│   ├── loaders.py          Vadimkin, massive-attacks, missile_daily
+├── artifacts/              models, plots, metrics (gitignored)     [planned]
+├── src/
+│   ├── config.py           paths, grid, horizons, oblast codelist + aliases
+│   ├── loaders.py          massive-attacks + missile_daily done; alerts/ACLED stubbed
 │   ├── index.py            master hourly UTC grid + leak-guard join
-│   ├── threat_map.py       model → threat-type table
-│   ├── features.py         lags, calendar, threat channels, ACLED lag
-│   ├── model_b.py          4 direct LightGBM
-│   ├── model_a.py          Prophet baseline
-│   └── evaluate.py         temporal split, PR-AUC, calibration, heatmap
+│   ├── threat_map.py       model → threat-type table (7 channels, real-data verified)
+│   ├── features.py         lags, calendar, threat channels, ACLED lag [planned]
+│   ├── model_b.py          4 direct LightGBM                       [planned]
+│   ├── model_a.py          Prophet baseline                        [planned]
+│   └── evaluate.py         temporal split, PR-AUC, calibration, heatmap [planned]
+├── tests/                  threat_map + index + loaders (46 passing)
+│   ├── test_threat_map.py
+│   ├── test_index.py
+│   └── test_loaders.py
 ├── notebooks/
 │   └── eda.ipynb                                                   [planned]
-└── requirements.txt                                               [planned]
+└── requirements.txt
 ```
 
 Mark modules `[planned]` until they exist; drop the tag once built.
