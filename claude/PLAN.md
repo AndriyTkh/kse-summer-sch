@@ -23,7 +23,7 @@
    - Convert all sources Kyiv-local → UTC (watch DST).
    - **Leak guard:** every feature at row `t` uses only data with timestamp `< t`; target = future window `t→t+H`.
 3. **Threat mapping table** — `model` → {ballistic, air-cruise, sea-cruise, drone-strike, drone-decoy, kinzhal}. Test it (combos, Cyrillic/Latin, typos).
-4. **Feature pipeline** — lags, calendar, region, threat channels, ACLED 7-day-lagged rolling impact.
+4. **Feature pipeline** — lags, calendar, region, threat channels. Geo signal from piterfm `target`/`launch_place` (no impact dataset in MVP; UCDP propensity → Phase 2).
 5. **B** — 4 direct LightGBM, one target shift per horizon.
 6. **A** — Prophet daily baseline.
 
@@ -41,7 +41,7 @@
 | # | Issue | Resolution |
 |---|---|---|
 | 1 | Timestamp alignment | Master hourly UTC index; lag-only joins; tested join fn verified on a known date |
-| 2 | ACLED post-hoc | **Time-joined with 7-day lag** (rolling impact as-of `t-7d`) — leak-safe, keeps geo+temporal signal |
+| 2 | Impact dataset | **Dropped from MVP.** ACLED → commercial-license/registration friction. Geo covered by piterfm `target`/`launch_place`. Phase 2: **UCDP GED** (CC-BY) as static per-oblast prior |
 | 3 | massive = "massive" only | Missing hour = **0 launches** (absence = no wave); daily fills tempo |
 | 4 | Geo mismatch | Normalize all to **ADM1 oblast** codelist; raion/hromada dropped in MVP |
 | 5 | Class imbalance | Metric = **PR-AUC + calibration**, not accuracy; `scale_pos_weight` |
@@ -67,7 +67,7 @@ kse-summer-sch/
 │   ├── loaders.py         # Vadimkin, massive-attacks, missile_daily
 │   ├── index.py           # master hourly UTC grid + leak-guard join
 │   ├── threat_map.py      # model → threat-type table
-│   ├── features.py        # lags, calendar, threat channels, ACLED lag
+│   ├── features.py        # lags, calendar, threat channels (UCDP prior → Phase 2)
 │   ├── model_b.py         # 4 direct LightGBM
 │   ├── model_a.py         # Prophet baseline
 │   └── evaluate.py        # temporal split, PR-AUC, calibration, heatmap

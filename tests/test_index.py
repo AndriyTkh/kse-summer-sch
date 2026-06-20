@@ -72,7 +72,7 @@ def test_asof_lag_shifts_window():
         "ts": [pd.Timestamp("2022-03-01 00:00", tz="UTC")],
         "impact": [5],
     })
-    out = index.asof_join(g, src, on="ts", lag=f"{config.ACLED_LAG_DAYS}D")
+    out = index.asof_join(g, src, on="ts", lag=f"{config.UCDP_LAG_DAYS}D")
     before = out.xs(pd.Timestamp("2022-03-07 00:00", tz="UTC"), level="ts_utc")["impact"]
     after = out.xs(pd.Timestamp("2022-03-08 06:00", tz="UTC"), level="ts_utc")["impact"]
     assert before.isna().all()    # < t+7d : not yet visible

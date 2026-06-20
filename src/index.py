@@ -81,11 +81,11 @@ def asof_join(
 
     Attaches, for each grid row at time t, the most recent `source` row whose
     timestamp is STRICTLY before (t - lag). Enforced via:
-      - shifting source time forward by `lag` (so ACLED's 7d coding delay is honored), and
+      - shifting source time forward by `lag` (so UCDP's release delay is honored), and
       - `allow_exact_matches=False` -> strict `<`, so nothing at exactly t leaks.
 
     `on`   : timestamp column in `source` (tz-aware UTC).
-    `lag`  : Timedelta/str; 0h = plain "< t". ACLED uses config.ACLED_LAG_DAYS.
+    `lag`  : Timedelta/str; 0h = plain "< t". UCDP uses config.UCDP_LAG_DAYS.
     `by`   : optional group key present in both (e.g. 'oblast').
     `cols` : source columns to bring over (default: all but keys).
     """

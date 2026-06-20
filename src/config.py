@@ -24,9 +24,10 @@ WAR_START = "2022-02-24"   # grid origin
 HORIZONS = ["30m", "1h", "3h", "6h"]
 HORIZON_HOURS = {"30m": 0.5, "1h": 1, "3h": 3, "6h": 6}
 
-# --- ACLED leak-safe lag -------------------------------------------------
-# Impact data coded ~days later; join as-of t-7d rolling impact.
-ACLED_LAG_DAYS = 7
+# --- UCDP leak-safe lag --------------------------------------------------
+# Impact data released annually; join as-of a lagged static per-oblast prior.
+# (Phase 2; UCDP GED replaces dropped ACLED. Kept as generic as-of lag knob.)
+UCDP_LAG_DAYS = 7
 
 # --- evaluation ----------------------------------------------------------
 # Temporal split only, never random. Hold out the last N weeks as test.

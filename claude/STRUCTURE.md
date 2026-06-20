@@ -52,14 +52,15 @@ CPU-only for MVP.
 | Alert (target) | **Vadimkin** air-raid-sirens-dataset | alert on/off per oblast, start/end | real-time | hourly |
 | Launch | **piterfm massive-attacks** | per-wave type/count/origin, time_start/end | per wave | hourly |
 | Tempo | **piterfm missile_attacks_daily** | daily national launch totals | daily | daily (A) |
-| Impact | **ACLED** | geolocated strikes + type per oblast | post-hoc (coded ~days later) | 7-day-lagged |
+| Impact (opt, Phase 2) | **UCDP GED** | geolocated fatal events per oblast | annual release (ends 2024) | static prior |
 | Real-time geo | **TG monitor channels** (roadmap) | live "N drones → oblast Y" | real-time | Phase 3 |
 
 Sources:
 - https://github.com/Vadimkin/ukrainian-air-raid-sirens-dataset
 - https://www.kaggle.com/datasets/piterfm/massive-missile-attacks-on-ukraine/data
 - https://github.com/PetroIvaniuk/2022-Ukraine-Russia-War-Dataset
-- ACLED: https://acleddata.com (free registration, bulk export)
+- UCDP GED: https://ucdp.uu.se/downloads/ (CC-BY, bulk CSV, no gate) — Phase 2 impact prior
+  - (ACLED dropped: commercial-license clause + registration gate + tier caps; UCDP cleaner)
 
 ---
 
@@ -81,8 +82,11 @@ drone split:           strike (Shahed-136/131) vs decoy (Gerbera) vs recon (Orla
                        (decoy channel empty in current data — see PLAN #8; recon added data-driven)
 launch_place origin:   Engels/Olenya... (structured strategic-aviation signal)
 drone tempo:           daily launch count (feeds A)
-ACLED target-propensity: per-oblast rolling impact, 7-day-lagged (leak-safe)
-anomaly flag (optional)
+
+optional / Phase 2:
+  target geo (MVP):    piterfm massive-attacks `target` + `launch_place` — coarse oblast signal, no extra dataset
+  UCDP propensity:     per-oblast static impact prior (CC-BY, Phase 2; replaces ACLED)
+  anomaly flag:        IsolationForest / STL
 ```
 Threat-type is the highest-leverage feature after raw lags: each type powers a different horizon
 (ballistic/kinzhal → 30m–1h; air-cruise from bomber bases → 3h–6h; drones → duration + spread).
@@ -117,10 +121,10 @@ kse-summer-sch/
 ├── artifacts/              models, plots, metrics (gitignored)     [planned]
 ├── src/
 │   ├── config.py           paths, grid, horizons, oblast codelist + aliases
-│   ├── loaders.py          massive-attacks + missile_daily done; alerts/ACLED stubbed
+│   ├── loaders.py          massive-attacks + missile_daily done; alerts stubbed (UCDP Phase 2)
 │   ├── index.py            master hourly UTC grid + leak-guard join
 │   ├── threat_map.py       model → threat-type table (7 channels, real-data verified)
-│   ├── features.py         lags, calendar, threat channels, ACLED lag [planned]
+│   ├── features.py         lags, calendar, threat channels [planned]; UCDP prior [Phase 2]
 │   ├── model_b.py          4 direct LightGBM                       [planned]
 │   ├── model_a.py          Prophet baseline                        [planned]
 │   └── evaluate.py         temporal split, PR-AUC, calibration, heatmap [planned]

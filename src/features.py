@@ -11,7 +11,7 @@ Channels:
                   sea-cruise|drone-strike|drone-recon|drone-decoy|kinzhal); national
                   (no affected-region) waves broadcast to all oblasts
   tempo         — national daily launch tempo, previous-day (no same-day leak)
-  acled         — per-oblast rolling impact, 7-day-lagged (issue #2) — NO-OP (source skipped)
+  ucdp          — per-oblast impact prior, lagged (issue #2) — NO-OP (Phase 2, source not wired)
 
 Grid contract: MultiIndex (oblast, ts_utc), hourly UTC, with a raw `alert` column
 (from index.expand_alerts_to_grid). Per-horizon target shifting lives in model_b.
@@ -145,8 +145,8 @@ def add_tempo_features(df: pd.DataFrame, daily: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
-def add_acled_features(df: pd.DataFrame, acled=None) -> pd.DataFrame:
-    """No-op: ACLED skipped in this MVP run (issue #2 stays wired in spec only)."""
+def add_ucdp_features(df: pd.DataFrame, ucdp=None) -> pd.DataFrame:
+    """No-op: UCDP is Phase 2 (issue #2 stays wired in spec only)."""
     return df
 
 
@@ -154,7 +154,7 @@ def build_feature_matrix(grid: pd.DataFrame, sources: dict) -> pd.DataFrame:
     """Run all feature builders in order, return model-ready matrix.
 
     `grid` must already carry the raw `alert` column (index.expand_alerts_to_grid).
-    `sources` keys: 'waves' (massive attacks), 'daily' (missile tempo), optional 'acled'.
+    `sources` keys: 'waves' (massive attacks), 'daily' (missile tempo), optional 'ucdp'.
     Leak-safety is structural (shifts only); see module docstring.
     """
     if "alert" not in grid.columns:
@@ -166,5 +166,5 @@ def build_feature_matrix(grid: pd.DataFrame, sources: dict) -> pd.DataFrame:
         out = add_threat_features(out, sources["waves"])
     if sources.get("daily") is not None:
         out = add_tempo_features(out, sources["daily"])
-    out = add_acled_features(out, sources.get("acled"))
+    out = add_ucdp_features(out, sources.get("ucdp"))
     return out

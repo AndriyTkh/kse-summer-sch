@@ -156,10 +156,10 @@ def load_missile_daily(path=None) -> pd.DataFrame:
     return daily.reindex(full, fill_value=0).rename_axis("date_utc").reset_index()
 
 
-def load_acled(path=None) -> pd.DataFrame:
-    """ACLED geolocated strikes -> per-oblast impact events.
+def load_ucdp(path=None) -> pd.DataFrame:
+    """UCDP GED geolocated fatal events -> per-oblast impact prior.
 
-    Skipped in current MVP run (registration limits). features.add_acled_features
-    stays a no-op until this is wired. Join MUST use ACLED_LAG_DAYS (issue #2).
+    Phase 2 (replaces dropped ACLED). Not wired in MVP; features.add_ucdp_features
+    stays a no-op until this is built. Join MUST use UCDP_LAG_DAYS (issue #2).
     """
-    raise NotImplementedError("ACLED skipped (registration limits)")
+    raise NotImplementedError("UCDP GED is Phase 2 (not wired in MVP)")
