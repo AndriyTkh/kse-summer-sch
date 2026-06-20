@@ -42,6 +42,32 @@ def test_expand_alerts_overlap():
     assert sorted(on) == [1, 2, 3]
 
 
+def test_expand_alerts_edge_boundaries():
+    g = _grid()
+    alerts = pd.DataFrame({
+        "oblast": ["kyivska", "kyivska"],
+        # exact-hour interval [02:00,03:00) -> only cell 02; zero-length at 04:00 -> nothing
+        "start_utc": [pd.Timestamp("2022-03-01 02:00", tz="UTC"),
+                      pd.Timestamp("2022-03-01 04:00", tz="UTC")],
+        "end_utc": [pd.Timestamp("2022-03-01 03:00", tz="UTC"),
+                    pd.Timestamp("2022-03-01 04:00", tz="UTC")],
+    })
+    out = index.expand_alerts_to_grid(g, alerts)
+    on = out[out["alert"] == 1].index.get_level_values("ts_utc").hour.tolist()
+    assert on == [2]
+
+
+def test_expand_alerts_unknown_oblast_ignored():
+    g = _grid()
+    alerts = pd.DataFrame({
+        "oblast": ["lvivska"],   # not in this grid
+        "start_utc": [pd.Timestamp("2022-03-01 01:00", tz="UTC")],
+        "end_utc": [pd.Timestamp("2022-03-01 02:00", tz="UTC")],
+    })
+    out = index.expand_alerts_to_grid(g, alerts)
+    assert (out["alert"] == 0).all()
+
+
 def test_expand_alerts_empty():
     g = _grid()
     out = index.expand_alerts_to_grid(g, alerts=pd.DataFrame(

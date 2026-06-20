@@ -10,6 +10,7 @@ LEAK GUARD (non-negotiable):
 
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 
 from . import config
@@ -42,29 +43,43 @@ def expand_alerts_to_grid(grid: pd.DataFrame, alerts: pd.DataFrame) -> pd.DataFr
     `alerts` columns: [oblast, start_utc, end_utc] (tz-aware UTC). A cell covering
     [ts, ts+1h) is positive if any interval intersects it. This is the RAW label;
     per-horizon target shifting happens in model_b (never here — keep leak surface small).
+
+    Vectorized: the grid is sorted to (oblast, ts) so each oblast's hours form a sorted,
+    contiguous block; per interval we `searchsorted` the slice of cells it overlaps and
+    fill it — O(intervals * log hours), no per-cell Python. Overlap rule is unchanged:
+    cell [ts, ts+step) overlaps [start, end) iff ts < end and ts+step > start, i.e.
+    ts in (start - step, end). Assumes the regular hourly grid from build_master_index.
     """
-    out = grid.copy()
-    out["alert"] = 0
+    out = grid.sort_index()
+    n = len(out)
+    flag = np.zeros(n, dtype="int8")
     if alerts.empty:
+        out["alert"] = flag
         return out
 
     step = pd.Timedelta(config.GRID_FREQ)
-    # Hours available per oblast, for fast clipping.
-    hours_by_oblast = {
-        ob: sub.index.get_level_values("ts_utc")
-        for ob, sub in out.groupby(level="oblast")
-    }
+    obl = out.index.get_level_values("oblast")
+    ts_vals = out.index.get_level_values("ts_utc").values   # datetime64[ns] UTC
+    pos = np.arange(n)
+    # Per oblast: absolute positions + its sorted hour array (one O(n) pass per oblast).
+    blocks = {}
+    for ob in pd.unique(obl):
+        m = obl == ob
+        blocks[ob] = (pos[m], ts_vals[m])
+
     for row in alerts.itertuples(index=False):
-        hours = hours_by_oblast.get(row.oblast)
-        if hours is None:
+        block = blocks.get(row.oblast)
+        if block is None:
             continue
-        start = pd.Timestamp(row.start_utc)
-        end = pd.Timestamp(row.end_utc)
-        # Cell [ts, ts+step) overlaps [start, end) iff ts < end and ts+step > start.
-        mask = (hours < end) & (hours + step > start)
-        if mask.any():
-            hit = hours[mask]
-            out.loc[[(row.oblast, h) for h in hit], "alert"] = 1
+        bpos, hrs = block
+        lo_key = (pd.Timestamp(row.start_utc) - step).to_datetime64()  # ts > start-step
+        hi_key = pd.Timestamp(row.end_utc).to_datetime64()             # ts < end
+        lo = np.searchsorted(hrs, lo_key, side="right")
+        hi = np.searchsorted(hrs, hi_key, side="left")
+        if hi > lo:
+            flag[bpos[lo:hi]] = 1
+
+    out["alert"] = flag
     return out
 
 
