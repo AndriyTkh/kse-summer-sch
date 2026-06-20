@@ -32,6 +32,9 @@ UCDP_LAG_DAYS = 7
 # --- evaluation ----------------------------------------------------------
 # Temporal split only, never random. Hold out the last N weeks as test.
 TEST_WEEKS = 8
+# Calibration fold (issue #10): the last N weeks of the TRAIN remainder, held out
+# to fit isotonic out-of-fold. Three-way temporal order: train_fit < calib < test.
+CALIB_WEEKS = 4
 
 # --- oblast codelist (ADM1) ---------------------------------------------
 # Normalize every source to these codes. Raion/hromada dropped in MVP.

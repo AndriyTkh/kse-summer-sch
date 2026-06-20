@@ -36,27 +36,46 @@ def main() -> None:
           f"  positives {int(grid.alert.sum()):,} ({grid.alert.mean():.3f})  [{time.time()-t0:.0f}s]")
 
     fm = features.build_feature_matrix(grid, {"waves": waves, "daily": daily})
-    train, test = evaluate.temporal_split(fm)
-    print(f"features {fm.shape[1]} cols  train {len(train):,}  test {len(test):,}  [{time.time()-t0:.0f}s]")
+    # Three-way temporal split (issue #10): train_fit < calib < test, never random.
+    # calib is held out to fit isotonic out-of-fold so reported calibration is honest.
+    rest, test = evaluate.temporal_split(fm)
+    train_fit, calib = evaluate.temporal_split(rest, test_weeks=config.CALIB_WEEKS)
+    print(f"features {fm.shape[1]} cols  train_fit {len(train_fit):,}  "
+          f"calib {len(calib):,}  test {len(test):,}  [{time.time()-t0:.0f}s]")
 
-    models = model_b.train_all(train, train)
-    probs = model_b.predict_all(models, test)
-    print(f"trained {len(models)} horizons  [{time.time()-t0:.0f}s]\n")
+    models = model_b.train_all(train_fit, train_fit)
 
-    # Per-horizon metrics on the temporal test fold.
-    print(f"{'horizon':<8}{'base':>7}{'PR-AUC':>8}{'lift':>7}{'ECE':>7}{'Brier':>8}")
+    # Fit one isotonic calibrator per horizon on the held-out calib fold.
+    calib_probs = model_b.predict_all(models, calib)
+    calibrators = {}
+    for h in config.HORIZONS:
+        yc = model_b.make_target(calib, h).reindex(calib.index)
+        mc = yc.notna()
+        calibrators[h] = evaluate.fit_isotonic(yc[mc].astype(int), calib_probs.loc[mc, h])
+
+    raw = model_b.predict_all(models, test)
+    probs = model_b.predict_all(models, test, calibrators)
+    print(f"trained {len(models)} horizons + isotonic  [{time.time()-t0:.0f}s]\n")
+
+    # Per-horizon metrics on the temporal test fold. ECE/Brier shown raw -> calibrated:
+    # PR-AUC is unchanged by isotonic (monotone), ECE/Brier should drop.
+    from sklearn.metrics import brier_score_loss
+    print(f"{'horizon':<8}{'base':>7}{'PR-AUC':>8}{'lift':>7}"
+          f"{'ECE0':>7}{'ECE':>7}{'Brier0':>8}{'Brier':>8}")
     for h in config.HORIZONS:
         y = model_b.make_target(test, h).reindex(test.index)
         m = y.notna()
-        yt, ys = y[m].astype(int), probs.loc[m, h]
+        yt, ys, yr = y[m].astype(int), probs.loc[m, h], raw.loc[m, h]
         base = yt.mean()
         ap = evaluate.pr_auc(yt, ys)
+        ece0 = evaluate.expected_calibration_error(yt, yr)
         ece = evaluate.expected_calibration_error(yt, ys)
-        from sklearn.metrics import brier_score_loss
+        b0 = brier_score_loss(yt, yr)
         brier = brier_score_loss(yt, ys)
-        print(f"{h:<8}{base:>7.3f}{ap:>8.3f}{ap/base:>7.2f}{ece:>7.3f}{brier:>8.3f}")
+        print(f"{h:<8}{base:>7.3f}{ap:>8.3f}{ap/base:>7.2f}"
+              f"{ece0:>7.3f}{ece:>7.3f}{b0:>8.3f}{brier:>8.3f}")
 
-    # Artifacts: 1h reliability curve + oblast x horizon heatmap.
+    # Artifacts: 1h reliability curve (calibrated) + oblast x horizon heatmap.
     y1 = model_b.make_target(test, "1h").reindex(test.index)
     m1 = y1.notna()
     ax, _ = evaluate.calibration_plot(y1[m1].astype(int), probs.loc[m1, "1h"])

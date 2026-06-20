@@ -100,10 +100,18 @@ def train_all(X: pd.DataFrame, grid: pd.DataFrame, horizons=None) -> dict:
     return models
 
 
-def predict_all(models: dict, X: pd.DataFrame) -> pd.DataFrame:
-    """Per-horizon alert probabilities. Returns a frame indexed like X, one col per horizon."""
+def predict_all(models: dict, X: pd.DataFrame, calibrators: dict | None = None) -> pd.DataFrame:
+    """Per-horizon alert probabilities. Returns a frame indexed like X, one col per horizon.
+
+    If `calibrators` is given ({horizon: fitted IsotonicRegression}, see
+    evaluate.fit_isotonic), each horizon's raw prob is mapped through its calibrator
+    (issue #10). Monotone, so ranking/PR-AUC is unchanged; only the prob scale shifts.
+    """
     feats = feature_columns(X)
     out = pd.DataFrame(index=X.index)
     for h, model in models.items():
-        out[h] = model.predict_proba(X[feats])[:, 1]
+        p = model.predict_proba(X[feats])[:, 1]
+        if calibrators and h in calibrators:
+            p = calibrators[h].predict(p)
+        out[h] = p
     return out

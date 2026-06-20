@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import average_precision_score, brier_score_loss
 from sklearn.calibration import calibration_curve
+from sklearn.isotonic import IsotonicRegression
 
 from . import config
 
@@ -45,6 +46,22 @@ def expected_calibration_error(y_true, y_score, n_bins: int = 10) -> float:
         if m.any():
             ece += (m.mean()) * abs(y_score[m].mean() - y_true[m].mean())
     return float(ece)
+
+
+def fit_isotonic(y_true, y_score) -> IsotonicRegression:
+    """Fit isotonic regression mapping raw score -> calibrated probability (issue #10).
+
+    LightGBM with scale_pos_weight inflates probabilities (rebalances the prior), so
+    raw probs are miscalibrated even when ranking is good. Isotonic is monotone, so it
+    leaves PR-AUC (a ranking metric) unchanged while correcting the probability scale.
+
+    MUST be fit out-of-fold: pass a calibration slice the model never trained on
+    (the CALIB_WEEKS fold), never the test fold or in-sample train rows.
+    `out_of_bounds="clip"` keeps test scores outside the calib range in [0, 1].
+    """
+    iso = IsotonicRegression(out_of_bounds="clip", y_min=0.0, y_max=1.0)
+    iso.fit(np.asarray(y_score, dtype=float), np.asarray(y_true, dtype=float))
+    return iso
 
 
 def calibration_plot(y_true, y_score, n_bins: int = 10, ax=None):
