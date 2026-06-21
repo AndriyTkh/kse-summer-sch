@@ -1,0 +1,190 @@
+* { box-sizing: border-box; }
+
+:root {
+  --bg: #0b1120;
+  --panel: #0f172a;
+  --border: #334155;
+  --text: #e2e8f0;
+  --dim: #64748b;
+}
+
+html, body, #root {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  color: var(--dim);
+  font-size: 1.1rem;
+}
+.loading.error { color: #f87171; }
+
+/* --- topbar --- */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+.brand h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.brand .tagline {
+  font-size: 0.75rem;
+  color: var(--dim);
+}
+.status {
+  margin-left: auto;
+  text-align: right;
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+.status strong { color: var(--text); font-weight: 500; }
+.live.on { color: #22d3ee; }
+.live.off { color: var(--dim); }
+
+/* --- horizon toggle --- */
+.horizon-toggle { display: flex; align-items: center; gap: 0.6rem; }
+.horizon-label { font-size: 0.75rem; color: var(--dim); }
+.horizon-buttons { display: flex; gap: 2px; }
+.horizon-buttons button {
+  background: #1e293b;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+.horizon-buttons button:first-child { border-radius: 6px 0 0 6px; }
+.horizon-buttons button:last-child { border-radius: 0 6px 6px 0; }
+.horizon-buttons button.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  font-weight: 600;
+}
+
+/* --- main layout --- */
+.main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+.map-wrap { position: relative; flex: 1; }
+.map { position: absolute; inset: 0; }
+.deselect-hint {
+  position: absolute;
+  top: 12px; left: 12px;
+  z-index: 2;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+}
+
+.sidebar {
+  width: 380px;
+  border-left: 1px solid var(--border);
+  background: var(--panel);
+  overflow-y: auto;
+}
+
+/* --- panel --- */
+.panel { padding: 1.1rem 1.25rem; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; }
+.panel h2 { margin: 0 0 0.2rem; font-size: 1.1rem; }
+.panel h3 {
+  margin: 1.2rem 0 0.5rem;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+}
+.panel .subtitle { margin: 0; font-size: 0.78rem; color: var(--dim); }
+.close-btn {
+  background: none; border: none; color: var(--dim);
+  font-size: 1.1rem; cursor: pointer;
+}
+.close-btn:hover { color: var(--text); }
+
+.alert-badge {
+  margin-top: 0.6rem;
+  display: inline-block;
+  background: #7f1d1d;
+  color: #fecaca;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* --- table --- */
+.metrics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.metrics-table th {
+  text-align: right;
+  color: var(--dim);
+  font-weight: 500;
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.metrics-table th:first-child { text-align: left; }
+.metrics-table td {
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid #1e293b;
+}
+.metrics-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.metrics-table td.strong { color: #22d3ee; font-weight: 600; }
+.metrics-table td.dim { color: var(--dim); }
+.metrics-table td.lift { color: #4ade80; }
+.metrics-table tr.row-active { background: #1e293b; }
+
+.chart { margin: 0.3rem 0; }
+.footnote {
+  margin-top: 1rem;
+  font-size: 0.72rem;
+  color: var(--dim);
+  line-height: 1.4;
+}
+
+/* --- legend --- */
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1.25rem;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+  font-size: 0.72rem;
+  color: var(--dim);
+}
+.legend-bar {
+  width: 160px;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+}
+.legend-alert { margin-left: auto; color: #f87171; }

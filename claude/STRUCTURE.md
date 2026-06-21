@@ -142,8 +142,8 @@ kse-summer-sch/
 │   ├── model_b.py          4 direct LightGBM                       [planned]
 │   ├── model_a.py          Prophet baseline                        [planned]
 │   ├── evaluate.py         temporal split, PR-AUC, calibration, heatmap [planned]
-│   └── export_predictions.py  runs A+B → predictions.json + metrics.json [Phase 2]
-├── viz/                    React + MapLibre dashboard               [Phase 2]
+│   └── export_predictions.py  runs A+B → predictions.json + metrics.json
+├── viz/                    React + MapLibre dashboard (build passes)
 │   ├── public/             ukraine-oblasts.geojson + generated JSONs
 │   └── src/                App, AlertMap, HorizonToggle, MetricsPanel, RegionPanel
 ├── tests/                  threat_map + index + loaders (46 passing)
