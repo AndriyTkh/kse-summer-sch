@@ -1,0 +1,96 @@
+{
+  "generated_utc": "2026-06-21T13:55:09.317772+00:00",
+  "test_weeks": 8,
+  "lag_hours": [
+    3,
+    6,
+    12,
+    24
+  ],
+  "by_horizon": {
+    "30m": {
+      "pr_auc_full": 0.905197,
+      "by_lag": {
+        "3": {
+          "pr_auc_degraded": 0.905203,
+          "gap_pct": -0.000642
+        },
+        "6": {
+          "pr_auc_degraded": 0.905209,
+          "gap_pct": -0.001343
+        },
+        "12": {
+          "pr_auc_degraded": 0.905229,
+          "gap_pct": -0.003574
+        },
+        "24": {
+          "pr_auc_degraded": 0.905381,
+          "gap_pct": -0.020367
+        }
+      }
+    },
+    "1h": {
+      "pr_auc_full": 0.905197,
+      "by_lag": {
+        "3": {
+          "pr_auc_degraded": 0.905203,
+          "gap_pct": -0.000642
+        },
+        "6": {
+          "pr_auc_degraded": 0.905209,
+          "gap_pct": -0.001343
+        },
+        "12": {
+          "pr_auc_degraded": 0.905229,
+          "gap_pct": -0.003574
+        },
+        "24": {
+          "pr_auc_degraded": 0.905381,
+          "gap_pct": -0.020367
+        }
+      }
+    },
+    "3h": {
+      "pr_auc_full": 0.913934,
+      "by_lag": {
+        "3": {
+          "pr_auc_degraded": 0.913938,
+          "gap_pct": -0.000343
+        },
+        "6": {
+          "pr_auc_degraded": 0.913943,
+          "gap_pct": -0.000915
+        },
+        "12": {
+          "pr_auc_degraded": 0.913958,
+          "gap_pct": -0.002615
+        },
+        "24": {
+          "pr_auc_degraded": 0.914304,
+          "gap_pct": -0.040436
+        }
+      }
+    },
+    "6h": {
+      "pr_auc_full": 0.919999,
+      "by_lag": {
+        "3": {
+          "pr_auc_degraded": 0.920105,
+          "gap_pct": -0.01152
+        },
+        "6": {
+          "pr_auc_degraded": 0.920153,
+          "gap_pct": -0.016739
+        },
+        "12": {
+          "pr_auc_degraded": 0.920259,
+          "gap_pct": -0.028262
+        },
+        "24": {
+          "pr_auc_degraded": 0.921365,
+          "gap_pct": -0.148476
+        }
+      }
+    }
+  }
+}

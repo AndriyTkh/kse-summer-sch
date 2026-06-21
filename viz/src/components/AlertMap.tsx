@@ -3,23 +3,38 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { probabilityToColor } from "../utils/colorScale";
 import type { Horizon } from "../utils/colorScale";
-import type { PredictionsData } from "../hooks/usePredictions";
+import type { PredictionSource } from "../types";
 
 interface Props {
-  predictions: PredictionsData;
+  predictions: PredictionSource;
   horizon: Horizon;
   activeAlerts: Set<string>;
   selected: string | null;
   onSelect: (code: string | null) => void;
 }
 
-// Minimal raster-free style: just a background + our GeoJSON. No external tiles
-// (keeps the dashboard fully offline / no API key, per STRUCTURE §9).
+// Base style: dark background + a CARTO dark raster basemap underneath the
+// oblast choropleth, so regions read against real coastlines / neighbours /
+// the Black & Azov seas. CARTO basemaps need no API key (attribution required).
 const BASE_STYLE: maplibregl.StyleSpecification = {
   version: 8,
-  sources: {},
+  sources: {
+    carto: {
+      type: "raster",
+      tiles: [
+        "https://a.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png",
+        "https://b.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png",
+        "https://c.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png",
+        "https://d.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png",
+      ],
+      tileSize: 256,
+      attribution:
+        '© <a href="https://carto.com/attributions">CARTO</a> · © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    },
+  },
   layers: [
     { id: "bg", type: "background", paint: { "background-color": "#0b1120" } },
+    { id: "carto", type: "raster", source: "carto", paint: { "raster-opacity": 0.7 } },
   ],
 };
 
@@ -36,29 +51,28 @@ export function AlertMap({ predictions, horizon, activeAlerts, selected, onSelec
       style: BASE_STYLE,
       center: [31.5, 48.8],
       zoom: 4.7,
-      attributionControl: false,
+      attributionControl: { compact: true },
     });
     mapRef.current = map;
 
     map.on("load", async () => {
       const geo = await fetch("/ukraine-oblasts.geojson").then((r) => r.json());
-      // Inject per-feature props the layers read.
-      for (const f of geo.features) {
-        f.properties.prob = 0;
-        f.properties.fillColor = "#1e293b";
-        f.properties.alerting = false;
-      }
-      map.addSource("oblasts", { type: "geojson", data: geo });
+      // promoteId lets us address features by `code` via setFeatureState — so
+      // re-paints touch only changed features (no refetch / no setData of the
+      // ~470KB source on every horizon/selection change).
+      map.addSource("oblasts", { type: "geojson", data: geo, promoteId: "code" });
 
       map.addLayer({
         id: "oblast-fill",
         type: "fill",
         source: "oblasts",
         paint: {
-          "fill-color": ["get", "fillColor"],
+          "fill-color": ["coalesce", ["feature-state", "fillColor"], "#1e293b"],
+          // Lower floor than before so low-risk oblasts let the basemap show
+          // through; high-risk stays near-opaque.
           "fill-opacity": [
-            "interpolate", ["linear"], ["get", "prob"],
-            0, 0.35, 1, 0.92,
+            "interpolate", ["linear"], ["coalesce", ["feature-state", "prob"], 0],
+            0, 0.15, 1, 0.85,
           ],
         },
       });
@@ -67,11 +81,13 @@ export function AlertMap({ predictions, horizon, activeAlerts, selected, onSelec
         id: "oblast-alert",
         type: "line",
         source: "oblasts",
-        filter: ["==", ["get", "alerting"], true],
         paint: {
           "line-color": "#f87171",
           "line-width": 3.5,
           "line-dasharray": [2, 1.5],
+          // feature-state can't drive layer `filter`, so toggle visibility via
+          // opacity instead.
+          "line-opacity": ["case", ["boolean", ["feature-state", "alerting"], false], 1, 0],
         },
       });
 
@@ -80,8 +96,8 @@ export function AlertMap({ predictions, horizon, activeAlerts, selected, onSelec
         type: "line",
         source: "oblasts",
         paint: {
-          "line-color": "#334155",
-          "line-width": ["case", ["boolean", ["get", "selected"], false], 3, 0.8],
+          "line-color": ["case", ["boolean", ["feature-state", "selected"], false], "#e2e8f0", "#64748b"],
+          "line-width": ["case", ["boolean", ["feature-state", "selected"], false], 3, 1],
         },
       });
 
@@ -121,27 +137,24 @@ export function AlertMap({ predictions, horizon, activeAlerts, selected, onSelec
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Re-paint when horizon / alerts / selection / data change.
+  // Re-paint when horizon / alerts / selection / data change. Mutates only
+  // feature-state per oblast — no refetch, no full-source setData.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !loaded) return;
-    const src = map.getSource("oblasts") as maplibregl.GeoJSONSource | undefined;
-    if (!src) return;
 
-    fetch("/ukraine-oblasts.geojson")
-      .then((r) => r.json())
-      .then((geo) => {
-        for (const f of geo.features) {
-          const code = f.properties.code as string;
-          const p = predictions.predictions[code]?.[horizon as Horizon] ?? 0;
-          const prob = p ?? 0;
-          f.properties.prob = prob;
-          f.properties.fillColor = probabilityToColor(prob);
-          f.properties.alerting = activeAlerts.has(code);
-          f.properties.selected = code === selected;
-        }
-        src.setData(geo);
-      });
+    for (const code of Object.keys(predictions.predictions)) {
+      const prob = predictions.predictions[code]?.[horizon as Horizon] ?? 0;
+      map.setFeatureState(
+        { source: "oblasts", id: code },
+        {
+          prob,
+          fillColor: probabilityToColor(prob),
+          alerting: activeAlerts.has(code),
+          selected: code === selected,
+        },
+      );
+    }
   }, [predictions, horizon, activeAlerts, selected, loaded]);
 
   return (

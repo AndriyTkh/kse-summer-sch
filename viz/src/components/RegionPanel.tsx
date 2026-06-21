@@ -2,14 +2,14 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell,
 } from "recharts";
-import type { PredictionsData } from "../hooks/usePredictions";
+import type { PredictionSource } from "../types";
 import type { MetricsData } from "../hooks/useMetrics";
 import { HORIZONS, DISPLAY_NAMES, probabilityToColor } from "../utils/colorScale";
 import type { Horizon } from "../utils/colorScale";
 
 interface Props {
   code: string;
-  predictions: PredictionsData;
+  predictions: PredictionSource;
   metrics: MetricsData;
   horizon: Horizon;
   alerting: boolean;

@@ -120,6 +120,21 @@ html, body, #root {
   color: var(--dim);
 }
 .panel .subtitle { margin: 0; font-size: 0.78rem; color: var(--dim); }
+
+/* eval-method tabs (stats page) */
+.method-tabs { display: flex; flex-wrap: wrap; gap: 2px; margin: 0.6rem 0 0.9rem; }
+.method-tabs button {
+  background: #1e293b;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.76rem;
+}
+.method-tabs button.active { background: #2563eb; border-color: #2563eb; font-weight: 600; }
+.method-tabs button:disabled { opacity: 0.4; cursor: not-allowed; }
+.metrics-table td.cov { font-size: 0.72rem; word-break: break-all; }
 .close-btn {
   background: none; border: none; color: var(--dim);
   font-size: 1.1rem; cursor: pointer;

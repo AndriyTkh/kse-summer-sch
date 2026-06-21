@@ -1,0 +1,44 @@
+{
+  "generated_utc": "2026-06-21T13:54:28.552325+00:00",
+  "n_folds": 4,
+  "test_weeks": 8,
+  "purge_hours": 6,
+  "by_horizon": {
+    "30m": {
+      "n_folds": 4.0,
+      "pr_auc_mean": 0.896134,
+      "pr_auc_std": 0.012485,
+      "pr_auc_min": 0.878634,
+      "pr_auc_max": 0.905197,
+      "base_mean": 0.312164,
+      "lift_mean": 2.874508
+    },
+    "1h": {
+      "n_folds": 4.0,
+      "pr_auc_mean": 0.896134,
+      "pr_auc_std": 0.012485,
+      "pr_auc_min": 0.878634,
+      "pr_auc_max": 0.905197,
+      "base_mean": 0.312164,
+      "lift_mean": 2.874508
+    },
+    "3h": {
+      "n_folds": 4.0,
+      "pr_auc_mean": 0.915324,
+      "pr_auc_std": 0.009475,
+      "pr_auc_min": 0.904051,
+      "pr_auc_max": 0.92714,
+      "base_mean": 0.389823,
+      "lift_mean": 2.350882
+    },
+    "6h": {
+      "n_folds": 4.0,
+      "pr_auc_mean": 0.928002,
+      "pr_auc_std": 0.007316,
+      "pr_auc_min": 0.919999,
+      "pr_auc_max": 0.935788,
+      "base_mean": 0.458004,
+      "lift_mean": 2.028355
+    }
+  }
+}

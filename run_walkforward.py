@@ -12,7 +12,9 @@ from __future__ import annotations
 
 import time
 
-from src import config, evaluate, features, index, loaders
+import pandas as pd
+
+from src import config, evaluate, features, index, loaders, viz_export
 
 
 def main() -> None:
@@ -39,6 +41,18 @@ def main() -> None:
         print(f"{h:<8}{int(r['n_folds']):>6}{r['pr_auc_mean']:>8.3f}{r['pr_auc_std']:>7.3f}"
               f"{r['pr_auc_min']:>7.3f}{r['pr_auc_max']:>7.3f}"
               f"{r['base_mean']:>7.3f}{r['lift_mean']:>7.2f}")
+
+    # viz: walkforward.json — "walk-forward CV" evaluation method (stats page)
+    viz_export.write_viz_json("walkforward.json", {
+        "generated_utc": pd.Timestamp.utcnow().isoformat(),
+        "n_folds": int(config.WALK_FORWARD_FOLDS),
+        "test_weeks": int(config.TEST_WEEKS),
+        "purge_hours": int(config.PURGE_HOURS),
+        "by_horizon": {
+            h: {k: viz_export.serializable(v) for k, v in summary.loc[h].items()}
+            for h in summary.index
+        },
+    })
     print(f"\ndone  [{time.time()-t0:.0f}s]")
 
 

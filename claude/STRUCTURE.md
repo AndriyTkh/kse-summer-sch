@@ -149,15 +149,18 @@ kse-summer-sch/
 │   ├── operational_eval.py simulated vintage eval — backtest-vs-live gap quantification
 │   ├── survival.py         Phase-2 duration: KM + Cox PH alert time-to-all-clear
 │   ├── evaluate.py         temporal split + walk-forward CV, PR-AUC, calibration, heatmap
-│   └── export_predictions.py  runs A+B → predictions.json + metrics.json
+│   ├── viz_export.py       shared JSON serialize + write helper for the dashboard
+│   └── export_predictions.py  runs A+B → predictions.json + metrics.json (Phase-1 headline)
 ├── viz/                    React + MapLibre dashboard (build passes)
-│   ├── public/             ukraine-oblasts.geojson + generated JSONs
-│   └── src/                App, AlertMap, HorizonToggle, MetricsPanel, RegionPanel
+│   ├── public/             ukraine-oblasts.geojson + generated JSONs:
+│   │                         predictions/metrics (P1) · nowcast/walkforward/operational/survival (P2)
+│   └── src/                App, AlertMap, HorizonToggle, PredictionSourceToggle,
+│                             MetricsPanel (4 eval-method tabs), RegionPanel, types, useJson
 ├── run_mvp.py              Phase-1 headline: single-holdout B + A + artifacts
-├── run_walkforward.py      Phase-2: rolling-origin CV (mean ± spread + drift)
-├── run_forecast.py         Phase-2: emit next-6h per-oblast nowcast (calibrated)
-├── run_operational_eval.py Phase-2: sweep source-lag scenarios, report PR-AUC gap
-├── run_survival.py         Phase-2: KM + Cox PH duration model, C-index + MAE
+├── run_walkforward.py      Phase-2: rolling-origin CV (mean ± spread + drift) → walkforward.json
+├── run_forecast.py         Phase-2: emit next-6h per-oblast nowcast (calibrated) → nowcast.json
+├── run_operational_eval.py Phase-2: sweep source-lag scenarios, PR-AUC gap → operational.json
+├── run_survival.py         Phase-2: KM + Cox PH duration model, C-index + MAE → survival.json
 ├── tests/                  86 passing, 6 skipped (Prophet) — full pipeline + Phase-2
 │   ├── test_threat_map.py
 │   ├── test_index.py
