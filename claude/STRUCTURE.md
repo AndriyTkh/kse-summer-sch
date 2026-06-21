@@ -96,11 +96,13 @@ Threat-type is the highest-leverage feature after raw lags: each type powers a d
 ## 6. Phasing
 
 ```
-PHASE 1 — MVP (2 days):   B forecasting + threat-features + A baseline
-PHASE 2 — duration:        survival (lifelines), reuses Phase-1 covariates
-PHASE 2 — evaluation:      walk-forward backtest (rolling-origin CV) replacing the
+PHASE 1 — MVP (2 days):   B forecasting + threat-features + A baseline              ✅ DONE
+PHASE 2 — evaluation:      walk-forward backtest (rolling-origin CV) replacing the   ✅ DONE
                            single temporal holdout: slide the train/test cut forward,
                            score many folds -> mean ± spread + drift across war regimes
+PHASE 2 — nowcast:         forecast_now operational entrypoint — train on all data,   ✅ DONE
+                           emit next-6h per-oblast calibrated probabilities at the
+                           grid edge. Ragged-right-edge caveat carried in output.
 PHASE 2 — operational eval: forward/live forecast scored SEPARATELY from backtest.
                            Backtest overstates live perf: not leakage (timestamp guard
                            is correct) but DATA AVAILABILITY — recent rows complete in
@@ -112,6 +114,7 @@ PHASE 2 — operational eval: forward/live forecast scored SEPARATELY from backt
                            stale snapshot carries the true ragged edge -> no synthetic
                            lag-masking needed. Report backtest-vs-operational gap as a
                            headline (the real live capability).
+PHASE 2 — duration:        survival (lifelines), reuses Phase-1 covariates
 PHASE 3+ — roadmap:        TG real-time scrape · nowcast tier · quantile intervals ·
                            auto-retrain (drift) · C/TCN/TFT compare · Hawkes ·
                            spatial wave-propagation · multi-channel OSINT fusion
