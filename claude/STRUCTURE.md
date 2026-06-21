@@ -112,7 +112,10 @@ PHASE 2 — operational eval: forward/live forecast scored SEPARATELY from backt
                            test fold, sweep multiple lag scenarios (3/6/12/24h), report
                            backtest-vs-degraded PR-AUC gap per horizon. Real vintage
                            snapshots (Phase 3 data pipeline) will replace the simulation.
-PHASE 2 — duration:        survival (lifelines), reuses Phase-1 covariates
+PHASE 2 — duration:        survival (lifelines), reuses Phase-1 covariates           ✅ DONE
+                           Kaplan-Meier baseline + Cox PH with hourly features at
+                           alert start. Censoring-aware (issue #7). Accuracy capped
+                           until Phase-3 per-oblast swarm counts.
 PHASE 3+ — roadmap:        TG real-time scrape · nowcast tier · quantile intervals ·
                            auto-retrain (drift) · C/TCN/TFT compare · Hawkes ·
                            spatial wave-propagation · multi-channel OSINT fusion
@@ -144,12 +147,14 @@ kse-summer-sch/
 │   ├── model_a.py          Prophet baseline
 │   ├── forecast.py         operational nowcast — forecast_now at the grid edge
 │   ├── operational_eval.py simulated vintage eval — backtest-vs-live gap quantification
+│   ├── survival.py         Phase-2 duration: KM + Cox PH alert time-to-all-clear
 │   └── evaluate.py         temporal split + walk-forward CV, PR-AUC, calibration, heatmap
 ├── run_mvp.py              Phase-1 headline: single-holdout B + A + artifacts
 ├── run_walkforward.py      Phase-2: rolling-origin CV (mean ± spread + drift)
 ├── run_forecast.py         Phase-2: emit next-6h per-oblast nowcast (calibrated)
 ├── run_operational_eval.py Phase-2: sweep source-lag scenarios, report PR-AUC gap
-├── tests/                  79 passing, 6 skipped (Prophet) — full pipeline + Phase-2
+├── run_survival.py         Phase-2: KM + Cox PH duration model, C-index + MAE
+├── tests/                  86 passing, 6 skipped (Prophet) — full pipeline + Phase-2
 │   ├── test_threat_map.py
 │   ├── test_index.py
 │   ├── test_loaders.py
@@ -159,7 +164,8 @@ kse-summer-sch/
 │   ├── test_evaluate.py
 │   ├── test_walk_forward.py    Phase-2: rolling-origin folds + B eval/summary
 │   ├── test_forecast.py        Phase-2: forecast_now edge nowcast
-│   └── test_operational_eval.py Phase-2: degradation + gap direction
+│   ├── test_operational_eval.py Phase-2: degradation + gap direction
+│   └── test_survival.py        Phase-2: survival dataset, KM, Cox, temporal split
 ├── notebooks/
 │   └── eda.ipynb                                                   [planned]
 └── requirements.txt
