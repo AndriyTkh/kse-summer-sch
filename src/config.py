@@ -40,6 +40,12 @@ CALIB_WEEKS = 4
 # into the held-out fold (label bleed). Drop them => zero-bleed purged split.
 PURGE_HOURS = max(HORIZON_HOURS.values())  # 6 (longest horizon)
 
+# --- walk-forward backtest (Phase 2) ------------------------------------
+# Rolling-origin CV: slide the test window back N times -> a variance estimate +
+# drift across war regimes. The single holdout gives one verdict only (one window,
+# one regime, no spread). Each fold reuses TEST_WEEKS / PURGE_HOURS above.
+WALK_FORWARD_FOLDS = 4
+
 # --- oblast codelist (ADM1) ---------------------------------------------
 # Normalize every source to these codes. Raion/hromada dropped in MVP.
 # Canonical ADM1 set: 24 oblasts + Kyiv city + AR Crimea + Sevastopol = 27.

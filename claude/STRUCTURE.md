@@ -135,17 +135,27 @@ kse-summer-sch/
 ├── artifacts/              models, plots, metrics (gitignored)     [planned]
 ├── src/
 │   ├── config.py           paths, grid, horizons, oblast codelist + aliases
-│   ├── loaders.py          massive-attacks + missile_daily done; alerts stubbed (UCDP Phase 2)
+│   ├── loaders.py          Vadimkin alerts + massive-attacks + missile_daily
 │   ├── index.py            master hourly UTC grid + leak-guard join
 │   ├── threat_map.py       model → threat-type table (7 channels, real-data verified)
-│   ├── features.py         lags, calendar, threat channels [planned]; UCDP prior [Phase 2]
-│   ├── model_b.py          4 direct LightGBM                       [planned]
-│   ├── model_a.py          Prophet baseline                        [planned]
-│   └── evaluate.py         temporal split, PR-AUC, calibration, heatmap [planned]
-├── tests/                  threat_map + index + loaders (46 passing)
+│   ├── features.py         lags, calendar, threat channels; UCDP prior [Phase 2]
+│   ├── model_b.py          4 direct LightGBM
+│   ├── model_a.py          Prophet baseline
+│   ├── forecast.py         operational nowcast — forecast_now at the grid edge [Phase 2]
+│   └── evaluate.py         temporal split + walk-forward CV, PR-AUC, calibration, heatmap
+├── run_mvp.py              Phase-1 headline: single-holdout B + A + artifacts
+├── run_walkforward.py      Phase-2: rolling-origin CV (mean ± spread + drift)
+├── run_forecast.py         Phase-2: emit next-6h per-oblast nowcast (calibrated)
+├── tests/                  73 passing, 6 skipped (Prophet) — full pipeline + Phase-2
 │   ├── test_threat_map.py
 │   ├── test_index.py
-│   └── test_loaders.py
+│   ├── test_loaders.py
+│   ├── test_features.py
+│   ├── test_model_a.py
+│   ├── test_model_b.py
+│   ├── test_evaluate.py
+│   ├── test_walk_forward.py    Phase-2: rolling-origin folds + B eval/summary
+│   └── test_forecast.py        Phase-2: forecast_now edge nowcast
 ├── notebooks/
 │   └── eda.ipynb                                                   [planned]
 └── requirements.txt
