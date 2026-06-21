@@ -19,7 +19,18 @@ def test_temporal_split_cut_is_time_based():
     assert tr.max() < te.min()                         # no temporal overlap
     span = te.max() - te.min()
     assert pd.Timedelta(days=27) <= span <= pd.Timedelta(weeks=4)   # ~last 4 weeks
-    assert len(train) + len(test) == len(g)
+    # Purged split: train ends >= PURGE_HOURS before the test cut (label bleed gap).
+    gap = te.min() - tr.max()
+    assert gap >= pd.Timedelta(hours=config.PURGE_HOURS)
+    assert len(train) + len(test) < len(g)             # purge band dropped
+
+
+def test_temporal_split_no_purge_is_partition():
+    g = index.build_master_index(
+        start="2024-01-01", end="2024-03-25 23:00", oblasts=["kyivska", "lvivska"]
+    )
+    train, test = evaluate.temporal_split(g, test_weeks=4, purge_hours=0)
+    assert len(train) + len(test) == len(g)            # disabling purge => full split
 
 
 def test_pr_auc_perfect_and_baseline():

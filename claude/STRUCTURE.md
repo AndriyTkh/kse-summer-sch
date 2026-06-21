@@ -98,6 +98,20 @@ Threat-type is the highest-leverage feature after raw lags: each type powers a d
 ```
 PHASE 1 — MVP (2 days):   B forecasting + threat-features + A baseline
 PHASE 2 — duration:        survival (lifelines), reuses Phase-1 covariates
+PHASE 2 — evaluation:      walk-forward backtest (rolling-origin CV) replacing the
+                           single temporal holdout: slide the train/test cut forward,
+                           score many folds -> mean ± spread + drift across war regimes
+PHASE 2 — operational eval: forward/live forecast scored SEPARATELY from backtest.
+                           Backtest overstates live perf: not leakage (timestamp guard
+                           is correct) but DATA AVAILABILITY — recent rows complete in
+                           the historical CSV are missing/partial live (source publish
+                           lag = ragged right edge / nowcast problem). Honest test =
+                           real data VINTAGE: snapshot the sources at forecast time
+                           (e.g. before overnight refresh) into a separate dataset,
+                           predict next 6h, validate vs the later-updated source. The
+                           stale snapshot carries the true ragged edge -> no synthetic
+                           lag-masking needed. Report backtest-vs-operational gap as a
+                           headline (the real live capability).
 PHASE 3+ — roadmap:        TG real-time scrape · nowcast tier · quantile intervals ·
                            auto-retrain (drift) · C/TCN/TFT compare · Hawkes ·
                            spatial wave-propagation · multi-channel OSINT fusion
@@ -193,3 +207,5 @@ structured data via the launch dataset's `launch_place` — no scrape needed for
 - No native extrapolation (A patches trend at long horizon).
 - No free uncertainty bands (point estimate; quantile LightGBM = roadmap).
 - 6h event-timing ceiling (domain limit).
+- Single temporal holdout: one 8wk test window = one verdict, no variance estimate,
+  one war regime. Honest + leak-safe but not robustness-proof; walk-forward = Phase 2.

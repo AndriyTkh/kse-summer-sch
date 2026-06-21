@@ -35,6 +35,10 @@ TEST_WEEKS = 8
 # Calibration fold (issue #10): the last N weeks of the TRAIN remainder, held out
 # to fit isotonic out-of-fold. Three-way temporal order: train_fit < calib < test.
 CALIB_WEEKS = 4
+# Purge gap (hours) dropped from the TRAIN side of every split. Targets span
+# t -> t+H, so train rows within max-H of the cut carry labels that peek past it
+# into the held-out fold (label bleed). Drop them => zero-bleed purged split.
+PURGE_HOURS = max(HORIZON_HOURS.values())  # 6 (longest horizon)
 
 # --- oblast codelist (ADM1) ---------------------------------------------
 # Normalize every source to these codes. Raion/hromada dropped in MVP.

@@ -15,16 +15,24 @@ from sklearn.isotonic import IsotonicRegression
 from . import config
 
 
-def temporal_split(df: pd.DataFrame, test_weeks: int = config.TEST_WEEKS):
+def temporal_split(
+    df: pd.DataFrame,
+    test_weeks: int = config.TEST_WEEKS,
+    purge_hours: float = config.PURGE_HOURS,
+):
     """Split by time: train = early, test = last `test_weeks`. Returns (train, test).
 
     Cut is a single global timestamp (max ts - test_weeks). NEVER random (issue #6):
     rows at or after the cut are test, everything earlier is train. Works on any frame
     carrying a `ts_utc` index level.
+
+    Purged split (leak guard): targets span t -> t+H, so train rows in the last
+    `purge_hours` before the cut would carry labels reaching into test. Drop that
+    gap band so no train label peeks across the cut. Pass purge_hours=0 to disable.
     """
     ts = df.index.get_level_values("ts_utc")
     cut = ts.max() - pd.Timedelta(weeks=test_weeks)
-    train = df[ts < cut]
+    train = df[ts < cut - pd.Timedelta(hours=purge_hours)]
     test = df[ts >= cut]
     return train, test
 
