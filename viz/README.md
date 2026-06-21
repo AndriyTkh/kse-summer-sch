@@ -26,25 +26,31 @@ hides (toggle disabled). The UI runs standalone off the committed JSON.
 | `ukraine-oblasts.geojson` | committed | map polygons (keyed by `code`) | — |
 | `predictions.json` | `python -m src.export_predictions` | map · "Backtest" prediction source | ~1 min |
 | `metrics.json` | `python -m src.export_predictions` | stats · "Holdout" method | (same run) |
-| `nowcast.json` | `python run_forecast.py` | map · "Nowcast" prediction source | ~1 min |
-| `walkforward.json` | `python run_walkforward.py` | stats · "Walk-forward" method | ~2 min |
-| `operational.json` | `python run_operational_eval.py` | stats · "Operational" method | ~1 min |
-| `survival.json` | `python run_survival.py` | stats · "Duration" method | ~1 min |
+| `nowcast.json` | `python scripts/runs/run_forecast.py` | map · "Nowcast" prediction source | ~1 min |
+| `walkforward.json` | `python scripts/runs/run_walkforward.py` | stats · "Walk-forward" method | ~2 min |
+| `operational.json` | `python scripts/runs/run_operational_eval.py` | stats · "Operational" method | ~1 min |
+| `survival.json` | `python scripts/runs/run_survival.py` | stats · "Duration" method | ~1 min |
+| `intervals.json` | `python scripts/runs/run_phase3.py` | stats · Bq quantile bands | ~1 min |
 
 > ⚠️ Each script trains LightGBM over the full ~1 M-row hourly grid (walk-forward
 > retrains 4× by design) → 95 % CPU for the noted minutes. Run only the slice you
 > need to refresh. They are **independent** — order doesn't matter, nothing
 > overwrites another's file.
 
-Regenerate from the repo root (prefix `PYTHONUTF8=1`; on Windows use
-`.venv/Scripts/python`):
+**One-go:** `python run.py` (repo root) installs deps, regenerates every JSON below
+except walk-forward, then launches this dashboard. `--no-install` / `--no-viz` /
+`--skip-compute` narrow that. Walk-forward stays manual (dominant cost for tiny gain).
+
+Or regenerate one slice at a time from the repo root (prefix `PYTHONUTF8=1`; on
+Windows use `.venv/Scripts/python`). The partials live under `scripts/runs/`:
 
 ```bash
-PYTHONUTF8=1 python -m src.export_predictions   # backtest + holdout (default)
-PYTHONUTF8=1 python run_forecast.py             # nowcast prediction source
-PYTHONUTF8=1 python run_walkforward.py          # walk-forward CV stats
-PYTHONUTF8=1 python run_operational_eval.py     # backtest-vs-live gap stats
-PYTHONUTF8=1 python run_survival.py             # alert-duration stats
+PYTHONUTF8=1 python -m src.export_predictions             # backtest + holdout + onset (default)
+PYTHONUTF8=1 python scripts/runs/run_forecast.py          # nowcast prediction source
+PYTHONUTF8=1 python scripts/runs/run_walkforward.py       # walk-forward CV stats
+PYTHONUTF8=1 python scripts/runs/run_operational_eval.py  # backtest-vs-live gap stats
+PYTHONUTF8=1 python scripts/runs/run_survival.py          # alert-duration stats
+PYTHONUTF8=1 python scripts/runs/run_phase3.py            # Bq quantile intervals
 ```
 
 ### UI switches

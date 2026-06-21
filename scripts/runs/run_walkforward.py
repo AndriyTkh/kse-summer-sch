@@ -5,12 +5,18 @@ regimes. Slides the test window back WALK_FORWARD_FOLDS times, scores each fold,
 prints per-fold PR-AUC plus the mean ± spread per horizon. Leak guard unchanged: each
 fold purges PURGE_HOURS before its cut.
 
-Run: PYTHONUTF8=1 python run_walkforward.py
+Run: PYTHONUTF8=1 python scripts/runs/run_walkforward.py
 """
 
 from __future__ import annotations
 
+import sys
 import time
+from pathlib import Path
+
+# Partial moved under scripts/runs/ — put repo root on sys.path so `from src import`
+# resolves when run standalone (the combined base run.py imports src directly).
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import pandas as pd
 

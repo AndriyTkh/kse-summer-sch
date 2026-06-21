@@ -1,0 +1,836 @@
+{
+  "generated_utc": "2026-06-21T18:23:11.837660+00:00",
+  "forecast_base_utc": "2026-06-21T18:00:00+00:00",
+  "horizons": [
+    "30m",
+    "1h",
+    "3h",
+    "6h"
+  ],
+  "horizon_hours": {
+    "30m": 0.5,
+    "1h": 1,
+    "3h": 3,
+    "6h": 6
+  },
+  "test_weeks": 8,
+  "predictions": {
+    "cherkaska": {
+      "30m": 0.114467,
+      "1h": 0.114467,
+      "3h": 0.242199,
+      "6h": 0.552361
+    },
+    "chernihivska": {
+      "30m": 0.114919,
+      "1h": 0.114919,
+      "3h": 0.40836,
+      "6h": 0.55914
+    },
+    "chernivetska": {
+      "30m": 0.034247,
+      "1h": 0.034247,
+      "3h": 0.068862,
+      "6h": 0.184466
+    },
+    "crimea": {
+      "30m": null,
+      "1h": null,
+      "3h": null,
+      "6h": null
+    },
+    "dnipropetrovska": {
+      "30m": 0.228571,
+      "1h": 0.228571,
+      "3h": 0.635659,
+      "6h": 0.808241
+    },
+    "donetska": {
+      "30m": 0.234801,
+      "1h": 0.234801,
+      "3h": 0.582822,
+      "6h": 0.808241
+    },
+    "ivano-frankivska": {
+      "30m": 0.034247,
+      "1h": 0.034247,
+      "3h": 0.058824,
+      "6h": 0.184466
+    },
+    "kharkivska": {
+      "30m": 0.234801,
+      "1h": 0.234801,
+      "3h": 0.582822,
+      "6h": 0.808241
+    },
+    "khersonska": {
+      "30m": 0.114919,
+      "1h": 0.114919,
+      "3h": 0.305732,
+      "6h": 0.566667
+    },
+    "khmelnytska": {
+      "30m": 0.034247,
+      "1h": 0.034247,
+      "3h": 0.069863,
+      "6h": 0.281818
+    },
+    "kyivska": {
+      "30m": 0.114467,
+      "1h": 0.114467,
+      "3h": 0.264706,
+      "6h": 0.566667
+    },
+    "kyiv-city": {
+      "30m": 0.086735,
+      "1h": 0.086735,
+      "3h": 0.189189,
+      "6h": 0.369089
+    },
+    "kirovohradska": {
+      "30m": 0.114467,
+      "1h": 0.114467,
+      "3h": 0.253886,
+      "6h": 0.61413
+    },
+    "luhanska": {
+      "30m": null,
+      "1h": null,
+      "3h": null,
+      "6h": null
+    },
+    "lvivska": {
+      "30m": 0.034247,
+      "1h": 0.034247,
+      "3h": 0.069863,
+      "6h": 0.184466
+    },
+    "mykolaivska": {
+      "30m": 0.114919,
+      "1h": 0.114919,
+      "3h": 0.421053,
+      "6h": 0.61413
+    },
+    "odeska": {
+      "30m": 0.114919,
+      "1h": 0.114919,
+      "3h": 0.253886,
+      "6h": 0.552361
+    },
+    "poltavska": {
+      "30m": 0.228571,
+      "1h": 0.228571,
+      "3h": 0.469373,
+      "6h": 0.621053
+    },
+    "rivnenska": {
+      "30m": 0.059524,
+      "1h": 0.059524,
+      "3h": 0.139171,
+      "6h": 0.286957
+    },
+    "sevastopol": {
+      "30m": null,
+      "1h": null,
+      "3h": null,
+      "6h": null
+    },
+    "sumska": {
+      "30m": 0.228571,
+      "1h": 0.228571,
+      "3h": 0.533333,
+      "6h": 0.63
+    },
+    "ternopilska": {
+      "30m": 0.034247,
+      "1h": 0.034247,
+      "3h": 0.068862,
+      "6h": 0.184466
+    },
+    "vinnytska": {
+      "30m": 0.067708,
+      "1h": 0.067708,
+      "3h": 0.146538,
+      "6h": 0.336957
+    },
+    "volynska": {
+      "30m": 0.034247,
+      "1h": 0.034247,
+      "3h": 0.058824,
+      "6h": 0.184466
+    },
+    "zakarpatska": {
+      "30m": 0.025,
+      "1h": 0.025,
+      "3h": 0.023697,
+      "6h": 0.160966
+    },
+    "zaporizka": {
+      "30m": 0.234801,
+      "1h": 0.234801,
+      "3h": 0.635659,
+      "6h": 0.808241
+    },
+    "zhytomyrska": {
+      "30m": 0.059524,
+      "1h": 0.059524,
+      "3h": 0.189189,
+      "6h": 0.315068
+    }
+  },
+  "aggregate": {
+    "30m": {
+      "base_rate": 0.078534,
+      "pr_auc": 0.25723,
+      "lift": 3.275412,
+      "n_samples": 20539
+    },
+    "1h": {
+      "base_rate": 0.078534,
+      "pr_auc": 0.25723,
+      "lift": 3.275412,
+      "n_samples": 20539
+    },
+    "3h": {
+      "base_rate": 0.186182,
+      "pr_auc": 0.473761,
+      "lift": 2.544606,
+      "n_samples": 20539
+    },
+    "6h": {
+      "base_rate": 0.289401,
+      "pr_auc": 0.609033,
+      "lift": 2.104464,
+      "n_samples": 20539
+    }
+  },
+  "per_oblast": {
+    "cherkaska": {
+      "30m": {
+        "pr_auc": 0.145116,
+        "base_rate": 0.101887,
+        "mean_pred": 0.104045,
+        "n_samples": 1060
+      },
+      "1h": {
+        "pr_auc": 0.145116,
+        "base_rate": 0.101887,
+        "mean_pred": 0.104045,
+        "n_samples": 1060
+      },
+      "3h": {
+        "pr_auc": 0.389819,
+        "base_rate": 0.259434,
+        "mean_pred": 0.250144,
+        "n_samples": 1060
+      },
+      "6h": {
+        "pr_auc": 0.573459,
+        "base_rate": 0.429245,
+        "mean_pred": 0.400654,
+        "n_samples": 1060
+      }
+    },
+    "chernihivska": {
+      "30m": {
+        "pr_auc": 0.451605,
+        "base_rate": 0.280543,
+        "mean_pred": 0.338533,
+        "n_samples": 221
+      },
+      "1h": {
+        "pr_auc": 0.451605,
+        "base_rate": 0.280543,
+        "mean_pred": 0.338533,
+        "n_samples": 221
+      },
+      "3h": {
+        "pr_auc": 0.753832,
+        "base_rate": 0.552036,
+        "mean_pred": 0.671757,
+        "n_samples": 221
+      },
+      "6h": {
+        "pr_auc": 0.845922,
+        "base_rate": 0.692308,
+        "mean_pred": 0.785571,
+        "n_samples": 221
+      }
+    },
+    "chernivetska": {
+      "30m": {
+        "pr_auc": 0.027761,
+        "base_rate": 0.017788,
+        "mean_pred": 0.023921,
+        "n_samples": 1293
+      },
+      "1h": {
+        "pr_auc": 0.027761,
+        "base_rate": 0.017788,
+        "mean_pred": 0.023921,
+        "n_samples": 1293
+      },
+      "3h": {
+        "pr_auc": 0.065653,
+        "base_rate": 0.049497,
+        "mean_pred": 0.080777,
+        "n_samples": 1293
+      },
+      "6h": {
+        "pr_auc": 0.149524,
+        "base_rate": 0.090487,
+        "mean_pred": 0.139519,
+        "n_samples": 1293
+      }
+    },
+    "crimea": {},
+    "dnipropetrovska": {
+      "30m": {
+        "pr_auc": 0.2,
+        "base_rate": 0.052632,
+        "mean_pred": 0.34499,
+        "n_samples": 19
+      },
+      "1h": {
+        "pr_auc": 0.2,
+        "base_rate": 0.052632,
+        "mean_pred": 0.34499,
+        "n_samples": 19
+      },
+      "3h": {
+        "pr_auc": 1.0,
+        "base_rate": 0.052632,
+        "mean_pred": 0.762581,
+        "n_samples": 19
+      },
+      "6h": {
+        "pr_auc": 0.333333,
+        "base_rate": 0.052632,
+        "mean_pred": 0.891851,
+        "n_samples": 19
+      }
+    },
+    "donetska": {
+      "30m": {
+        "pr_auc": 0.629004,
+        "base_rate": 0.268293,
+        "mean_pred": 0.484505,
+        "n_samples": 41
+      },
+      "1h": {
+        "pr_auc": 0.629004,
+        "base_rate": 0.268293,
+        "mean_pred": 0.484505,
+        "n_samples": 41
+      },
+      "3h": {
+        "pr_auc": 0.701746,
+        "base_rate": 0.463415,
+        "mean_pred": 0.837134,
+        "n_samples": 41
+      },
+      "6h": {
+        "pr_auc": 0.946691,
+        "base_rate": 0.560976,
+        "mean_pred": 0.925786,
+        "n_samples": 41
+      }
+    },
+    "ivano-frankivska": {
+      "30m": {
+        "pr_auc": 0.017012,
+        "base_rate": 0.013772,
+        "mean_pred": 0.024545,
+        "n_samples": 1307
+      },
+      "1h": {
+        "pr_auc": 0.017012,
+        "base_rate": 0.013772,
+        "mean_pred": 0.024545,
+        "n_samples": 1307
+      },
+      "3h": {
+        "pr_auc": 0.039573,
+        "base_rate": 0.038256,
+        "mean_pred": 0.080537,
+        "n_samples": 1307
+      },
+      "6h": {
+        "pr_auc": 0.065361,
+        "base_rate": 0.069625,
+        "mean_pred": 0.134942,
+        "n_samples": 1307
+      }
+    },
+    "kharkivska": {
+      "30m": {
+        "pr_auc": 0.729807,
+        "base_rate": 0.5,
+        "mean_pred": 0.463495,
+        "n_samples": 54
+      },
+      "1h": {
+        "pr_auc": 0.729807,
+        "base_rate": 0.5,
+        "mean_pred": 0.463495,
+        "n_samples": 54
+      },
+      "3h": {
+        "pr_auc": 0.910011,
+        "base_rate": 0.666667,
+        "mean_pred": 0.81815,
+        "n_samples": 54
+      },
+      "6h": {
+        "pr_auc": 0.936738,
+        "base_rate": 0.666667,
+        "mean_pred": 0.919285,
+        "n_samples": 54
+      }
+    },
+    "khersonska": {
+      "30m": {
+        "pr_auc": 0.227858,
+        "base_rate": 0.196262,
+        "mean_pred": 0.188234,
+        "n_samples": 856
+      },
+      "1h": {
+        "pr_auc": 0.227858,
+        "base_rate": 0.196262,
+        "mean_pred": 0.188234,
+        "n_samples": 856
+      },
+      "3h": {
+        "pr_auc": 0.545416,
+        "base_rate": 0.470794,
+        "mean_pred": 0.38375,
+        "n_samples": 856
+      },
+      "6h": {
+        "pr_auc": 0.739444,
+        "base_rate": 0.669393,
+        "mean_pred": 0.610735,
+        "n_samples": 856
+      }
+    },
+    "khmelnytska": {
+      "30m": {
+        "pr_auc": 0.044686,
+        "base_rate": 0.026274,
+        "mean_pred": 0.034771,
+        "n_samples": 1256
+      },
+      "1h": {
+        "pr_auc": 0.044686,
+        "base_rate": 0.026274,
+        "mean_pred": 0.034771,
+        "n_samples": 1256
+      },
+      "3h": {
+        "pr_auc": 0.137522,
+        "base_rate": 0.074841,
+        "mean_pred": 0.099124,
+        "n_samples": 1256
+      },
+      "6h": {
+        "pr_auc": 0.260648,
+        "base_rate": 0.139331,
+        "mean_pred": 0.163014,
+        "n_samples": 1256
+      }
+    },
+    "kyivska": {
+      "30m": {
+        "pr_auc": 0.234152,
+        "base_rate": 0.139773,
+        "mean_pred": 0.155825,
+        "n_samples": 880
+      },
+      "1h": {
+        "pr_auc": 0.234152,
+        "base_rate": 0.139773,
+        "mean_pred": 0.155825,
+        "n_samples": 880
+      },
+      "3h": {
+        "pr_auc": 0.530627,
+        "base_rate": 0.330682,
+        "mean_pred": 0.349197,
+        "n_samples": 880
+      },
+      "6h": {
+        "pr_auc": 0.70928,
+        "base_rate": 0.501136,
+        "mean_pred": 0.51148,
+        "n_samples": 880
+      }
+    },
+    "kyiv-city": {
+      "30m": {
+        "pr_auc": 0.089541,
+        "base_rate": 0.066214,
+        "mean_pred": 0.067728,
+        "n_samples": 1178
+      },
+      "1h": {
+        "pr_auc": 0.089541,
+        "base_rate": 0.066214,
+        "mean_pred": 0.067728,
+        "n_samples": 1178
+      },
+      "3h": {
+        "pr_auc": 0.264672,
+        "base_rate": 0.17657,
+        "mean_pred": 0.179539,
+        "n_samples": 1178
+      },
+      "6h": {
+        "pr_auc": 0.385646,
+        "base_rate": 0.301358,
+        "mean_pred": 0.299917,
+        "n_samples": 1178
+      }
+    },
+    "kirovohradska": {
+      "30m": {
+        "pr_auc": 0.181191,
+        "base_rate": 0.121152,
+        "mean_pred": 0.114201,
+        "n_samples": 1007
+      },
+      "1h": {
+        "pr_auc": 0.181191,
+        "base_rate": 0.121152,
+        "mean_pred": 0.114201,
+        "n_samples": 1007
+      },
+      "3h": {
+        "pr_auc": 0.418042,
+        "base_rate": 0.309831,
+        "mean_pred": 0.281904,
+        "n_samples": 1007
+      },
+      "6h": {
+        "pr_auc": 0.566018,
+        "base_rate": 0.502483,
+        "mean_pred": 0.445621,
+        "n_samples": 1007
+      }
+    },
+    "luhanska": {},
+    "lvivska": {
+      "30m": {
+        "pr_auc": 0.022973,
+        "base_rate": 0.014537,
+        "mean_pred": 0.031167,
+        "n_samples": 1307
+      },
+      "1h": {
+        "pr_auc": 0.022973,
+        "base_rate": 0.014537,
+        "mean_pred": 0.031167,
+        "n_samples": 1307
+      },
+      "3h": {
+        "pr_auc": 0.044725,
+        "base_rate": 0.039021,
+        "mean_pred": 0.089119,
+        "n_samples": 1307
+      },
+      "6h": {
+        "pr_auc": 0.067659,
+        "base_rate": 0.07039,
+        "mean_pred": 0.146076,
+        "n_samples": 1307
+      }
+    },
+    "mykolaivska": {
+      "30m": {
+        "pr_auc": 0.251073,
+        "base_rate": 0.207059,
+        "mean_pred": 0.185818,
+        "n_samples": 850
+      },
+      "1h": {
+        "pr_auc": 0.251073,
+        "base_rate": 0.207059,
+        "mean_pred": 0.185818,
+        "n_samples": 850
+      },
+      "3h": {
+        "pr_auc": 0.534375,
+        "base_rate": 0.468235,
+        "mean_pred": 0.428563,
+        "n_samples": 850
+      },
+      "6h": {
+        "pr_auc": 0.749419,
+        "base_rate": 0.688235,
+        "mean_pred": 0.628558,
+        "n_samples": 850
+      }
+    },
+    "odeska": {
+      "30m": {
+        "pr_auc": 0.208745,
+        "base_rate": 0.17761,
+        "mean_pred": 0.172502,
+        "n_samples": 929
+      },
+      "1h": {
+        "pr_auc": 0.208745,
+        "base_rate": 0.17761,
+        "mean_pred": 0.172502,
+        "n_samples": 929
+      },
+      "3h": {
+        "pr_auc": 0.488361,
+        "base_rate": 0.428418,
+        "mean_pred": 0.397192,
+        "n_samples": 929
+      },
+      "6h": {
+        "pr_auc": 0.676102,
+        "base_rate": 0.637244,
+        "mean_pred": 0.574282,
+        "n_samples": 929
+      }
+    },
+    "poltavska": {
+      "30m": {
+        "pr_auc": 0.323047,
+        "base_rate": 0.244204,
+        "mean_pred": 0.240777,
+        "n_samples": 647
+      },
+      "1h": {
+        "pr_auc": 0.323047,
+        "base_rate": 0.244204,
+        "mean_pred": 0.240777,
+        "n_samples": 647
+      },
+      "3h": {
+        "pr_auc": 0.617167,
+        "base_rate": 0.500773,
+        "mean_pred": 0.530414,
+        "n_samples": 647
+      },
+      "6h": {
+        "pr_auc": 0.773156,
+        "base_rate": 0.715611,
+        "mean_pred": 0.713528,
+        "n_samples": 647
+      }
+    },
+    "rivnenska": {
+      "30m": {
+        "pr_auc": 0.051037,
+        "base_rate": 0.038651,
+        "mean_pred": 0.049614,
+        "n_samples": 1216
+      },
+      "1h": {
+        "pr_auc": 0.051037,
+        "base_rate": 0.038651,
+        "mean_pred": 0.049614,
+        "n_samples": 1216
+      },
+      "3h": {
+        "pr_auc": 0.172957,
+        "base_rate": 0.10773,
+        "mean_pred": 0.136722,
+        "n_samples": 1216
+      },
+      "6h": {
+        "pr_auc": 0.291435,
+        "base_rate": 0.189145,
+        "mean_pred": 0.206781,
+        "n_samples": 1216
+      }
+    },
+    "sevastopol": {},
+    "sumska": {
+      "30m": {
+        "pr_auc": 0.692295,
+        "base_rate": 0.403226,
+        "mean_pred": 0.406225,
+        "n_samples": 124
+      },
+      "1h": {
+        "pr_auc": 0.692295,
+        "base_rate": 0.403226,
+        "mean_pred": 0.406225,
+        "n_samples": 124
+      },
+      "3h": {
+        "pr_auc": 0.853238,
+        "base_rate": 0.629032,
+        "mean_pred": 0.781477,
+        "n_samples": 124
+      },
+      "6h": {
+        "pr_auc": 0.834573,
+        "base_rate": 0.709677,
+        "mean_pred": 0.889836,
+        "n_samples": 124
+      }
+    },
+    "ternopilska": {
+      "30m": {
+        "pr_auc": 0.018721,
+        "base_rate": 0.014649,
+        "mean_pred": 0.026432,
+        "n_samples": 1297
+      },
+      "1h": {
+        "pr_auc": 0.018721,
+        "base_rate": 0.014649,
+        "mean_pred": 0.026432,
+        "n_samples": 1297
+      },
+      "3h": {
+        "pr_auc": 0.044794,
+        "base_rate": 0.040864,
+        "mean_pred": 0.085318,
+        "n_samples": 1297
+      },
+      "6h": {
+        "pr_auc": 0.069259,
+        "base_rate": 0.074788,
+        "mean_pred": 0.142513,
+        "n_samples": 1297
+      }
+    },
+    "vinnytska": {
+      "30m": {
+        "pr_auc": 0.066536,
+        "base_rate": 0.033306,
+        "mean_pred": 0.050474,
+        "n_samples": 1231
+      },
+      "1h": {
+        "pr_auc": 0.066536,
+        "base_rate": 0.033306,
+        "mean_pred": 0.050474,
+        "n_samples": 1231
+      },
+      "3h": {
+        "pr_auc": 0.233396,
+        "base_rate": 0.09342,
+        "mean_pred": 0.13887,
+        "n_samples": 1231
+      },
+      "6h": {
+        "pr_auc": 0.297557,
+        "base_rate": 0.171405,
+        "mean_pred": 0.234167,
+        "n_samples": 1231
+      }
+    },
+    "volynska": {
+      "30m": {
+        "pr_auc": 0.024437,
+        "base_rate": 0.020186,
+        "mean_pred": 0.027274,
+        "n_samples": 1288
+      },
+      "1h": {
+        "pr_auc": 0.024437,
+        "base_rate": 0.020186,
+        "mean_pred": 0.027274,
+        "n_samples": 1288
+      },
+      "3h": {
+        "pr_auc": 0.058377,
+        "base_rate": 0.057453,
+        "mean_pred": 0.082159,
+        "n_samples": 1288
+      },
+      "6h": {
+        "pr_auc": 0.109539,
+        "base_rate": 0.107919,
+        "mean_pred": 0.123551,
+        "n_samples": 1288
+      }
+    },
+    "zakarpatska": {
+      "30m": {
+        "pr_auc": 0.017883,
+        "base_rate": 0.01374,
+        "mean_pred": 0.021629,
+        "n_samples": 1310
+      },
+      "1h": {
+        "pr_auc": 0.017883,
+        "base_rate": 0.01374,
+        "mean_pred": 0.021629,
+        "n_samples": 1310
+      },
+      "3h": {
+        "pr_auc": 0.039265,
+        "base_rate": 0.038168,
+        "mean_pred": 0.068885,
+        "n_samples": 1310
+      },
+      "6h": {
+        "pr_auc": 0.068102,
+        "base_rate": 0.069466,
+        "mean_pred": 0.106261,
+        "n_samples": 1310
+      }
+    },
+    "zaporizka": {
+      "30m": {
+        "pr_auc": 0.618885,
+        "base_rate": 0.41573,
+        "mean_pred": 0.484974,
+        "n_samples": 89
+      },
+      "1h": {
+        "pr_auc": 0.618885,
+        "base_rate": 0.41573,
+        "mean_pred": 0.484974,
+        "n_samples": 89
+      },
+      "3h": {
+        "pr_auc": 0.863344,
+        "base_rate": 0.640449,
+        "mean_pred": 0.86072,
+        "n_samples": 89
+      },
+      "6h": {
+        "pr_auc": 0.845741,
+        "base_rate": 0.719101,
+        "mean_pred": 0.95773,
+        "n_samples": 89
+      }
+    },
+    "zhytomyrska": {
+      "30m": {
+        "pr_auc": 0.136227,
+        "base_rate": 0.076923,
+        "mean_pred": 0.092835,
+        "n_samples": 1079
+      },
+      "1h": {
+        "pr_auc": 0.136227,
+        "base_rate": 0.076923,
+        "mean_pred": 0.092835,
+        "n_samples": 1079
+      },
+      "3h": {
+        "pr_auc": 0.387933,
+        "base_rate": 0.203892,
+        "mean_pred": 0.218968,
+        "n_samples": 1079
+      },
+      "6h": {
+        "pr_auc": 0.576981,
+        "base_rate": 0.339203,
+        "mean_pred": 0.347652,
+        "n_samples": 1079
+      }
+    }
+  }
+}

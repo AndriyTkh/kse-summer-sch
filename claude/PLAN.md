@@ -108,6 +108,24 @@ predicting alert **ONSET**. Path chosen: **A then B.**
 
 **Order:** A (onset target + threat revival + re-probe) → B (survival timing).
 
+### A — BUILT (parallel, 2026-06-21 pm) — pending wiring as a B-vs-onset comparison
+
+Kept fully parallel to the whether-model; nothing in B's path mutated.
+
+- `src/model_onset.py` — `make_onset_target` (rising edge `alert==1 & prev==0` in (t,t+H],
+  masked to quiet-state rows `alert@t==0` → NaN-dropped), `train_all`; reuses
+  `model_b.train_horizon`/`predict_all`/`feature_columns` (only the target changes).
+- `features.add_threat_features` now takes an optional `channels/values/windows` override
+  (default = config = empty for whether); `build_feature_matrix` passes `sources["threat"]`.
+  Threat revived for onset via new `config.ONSET_THREAT_*` (ballistic/air-cruise/drone-strike,
+  launched, {6,24}h) WITHOUT touching `config.THREAT_CHANNELS` (whether stays empty).
+- `scripts/runs/run_onset.py` — parallel entrypoint (all run_*.py moved under scripts/runs/;
+  base `run.py` is the one-go install+compute+viz driver); `tests/test_model_onset.py` (5, green; full suite 121).
+- **First numbers (test fold, quiet-state rows):** base 0.075@1h / 0.275@6h (vs whether 0.51@6h),
+  PR-AUC 0.255@1h→0.625@6h, **lift 3.41@1h→2.27@6h** (honest, not persistence). **Threat group
+  gain share 14.6%@1h→15.6%@6h** — vs ~1% on the whether target. Thesis pays off on onset.
+- TODO next: wire onset exports into viz beside B (the comparison); then B (survival → next-onset).
+
 ---
 
 ## Open issues / loose ends (carry forward)

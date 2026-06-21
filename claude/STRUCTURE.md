@@ -162,12 +162,18 @@ kse-summer-sch/
 │   │                         predictions/metrics (P1) · nowcast/walkforward/operational/survival (P2)
 │   └── src/                App, AlertMap, HorizonToggle, PredictionSourceToggle,
 │                             MetricsPanel (4 eval-method tabs), RegionPanel, types, useJson
-├── run_mvp.py              Phase-1 headline: single-holdout B + A + artifacts
-├── run_walkforward.py      Phase-2: rolling-origin CV (mean ± spread + drift) → walkforward.json
-├── run_forecast.py         Phase-2: emit next-6h per-oblast nowcast (calibrated) → nowcast.json
-├── run_operational_eval.py Phase-2: sweep source-lag scenarios, PR-AUC gap → operational.json
-├── run_survival.py         Phase-2: KM + Cox PH duration model, C-index + MAE → survival.json
-├── run_phase3.py           Phase-3: Bq quantile intervals + drift-triggered auto-retrain
+├── run.py                  ONE-GO driver: install deps → compute all JSON (no walk-forward) → launch viz
+├── scripts/
+│   ├── runs/               partial entrypoints (runnable standalone; bootstrap repo root onto sys.path):
+│   │   ├── run_mvp.py        Phase-1 headline: single-holdout B + A + artifacts
+│   │   ├── run_onset.py      onset (alt target) headline + threat-revival gain probe
+│   │   ├── run_walkforward.py Phase-2: rolling-origin CV (mean ± spread) → walkforward.json (excluded from run.py)
+│   │   ├── run_forecast.py   Phase-2: emit next-6h per-oblast nowcast (calibrated) → nowcast.json
+│   │   ├── run_operational_eval.py Phase-2: sweep source-lag scenarios, PR-AUC gap → operational.json
+│   │   ├── run_survival.py   Phase-2: KM + Cox PH duration model, C-index + MAE → survival.json
+│   │   └── run_phase3.py     Phase-3: Bq quantile intervals → intervals.json
+│   ├── data_freshness.py
+│   └── update_data.py
 ├── tests/                  86 passing, 6 skipped (Prophet) — full pipeline + Phase-2/3
 │   ├── test_threat_map.py
 │   ├── test_index.py

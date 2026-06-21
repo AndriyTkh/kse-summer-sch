@@ -3,13 +3,19 @@
 Headline output for Phase-1 B (LightGBM forecasting). Leak-safe by construction
 (features < t, temporal split). Prophet baseline (A) is a separate, deferred part.
 
-Run: PYTHONUTF8=1 .venv/Scripts/python run_mvp.py
+Run: PYTHONUTF8=1 .venv/Scripts/python scripts/runs/run_mvp.py
 Writes calibration + heatmap PNGs to artifacts/ (gitignored).
 """
 
 from __future__ import annotations
 
+import sys
 import time
+from pathlib import Path
+
+# Partial moved under scripts/runs/ — put repo root on sys.path so `from src import`
+# resolves when run standalone (the combined base run.py imports src directly).
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import matplotlib
 matplotlib.use("Agg")

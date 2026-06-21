@@ -4,12 +4,18 @@ Fits Kaplan-Meier (non-parametric baseline) and Cox proportional-hazards (with
 covariates from the hourly feature matrix at alert-start time). Reports median
 alert duration, C-index, and top hazard-ratio covariates.
 
-Run: PYTHONUTF8=1 python run_survival.py
+Run: PYTHONUTF8=1 python scripts/runs/run_survival.py
 """
 
 from __future__ import annotations
 
+import sys
 import time
+from pathlib import Path
+
+# Partial moved under scripts/runs/ — put repo root on sys.path so `from src import`
+# resolves when run standalone (the combined base run.py imports src directly).
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import matplotlib
 matplotlib.use("Agg")

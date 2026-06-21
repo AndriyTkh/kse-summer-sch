@@ -98,8 +98,24 @@ def _explode_waves(waves: pd.DataFrame, oblasts) -> pd.DataFrame:
     return long
 
 
-def add_threat_features(df: pd.DataFrame, waves: pd.DataFrame) -> pd.DataFrame:
-    """Per-channel launch/wave counts over trailing windows, lag-shifted (< t)."""
+def add_threat_features(
+    df: pd.DataFrame,
+    waves: pd.DataFrame,
+    *,
+    channels: tuple[str, ...] | None = None,
+    values: tuple[str, ...] | None = None,
+    windows: tuple[int, ...] | None = None,
+) -> pd.DataFrame:
+    """Per-channel launch/wave counts over trailing windows, lag-shifted (< t).
+
+    Allowlist (`channels`/`values`/`windows`) defaults to the module-level config
+    (empty channels -> no threat cols, the deprecated whether-model state). The onset
+    model passes its revival allowlist explicitly so it can re-enable threat without
+    mutating the shared config the whether-model reads.
+    """
+    channels = config.THREAT_CHANNELS if channels is None else channels
+    values = config.THREAT_VALUES if values is None else values
+    windows = config.THREAT_WINDOWS if windows is None else windows
     out = df.sort_index()
     oblasts = out.index.get_level_values("oblast").unique()
     long = _explode_waves(waves, oblasts)
@@ -122,11 +138,11 @@ def add_threat_features(df: pd.DataFrame, waves: pd.DataFrame) -> pd.DataFrame:
     g = wide.groupby(level="oblast", sort=False)
     for col in wide.columns:
         ch, val = col[len("thr_"):].rsplit("_", 1)     # 'thr_drone-strike_launched'
-        if ch not in config.THREAT_CHANNELS or val not in config.THREAT_VALUES:
+        if ch not in channels or val not in values:
             continue                                   # allowlist prune (Phase 4)
         shifted = g[col].shift(1)                      # exclude current hour
         sg = shifted.groupby(level="oblast", sort=False)
-        for w in config.THREAT_WINDOWS:
+        for w in windows:
             out[f"{col}_{w}h"] = sg.rolling(w, min_periods=1).sum().reset_index(level=0, drop=True)
     return out
 
@@ -195,16 +211,19 @@ def build_feature_matrix(grid: pd.DataFrame, sources: dict) -> pd.DataFrame:
     """Run all feature builders in order, return model-ready matrix.
 
     `grid` must already carry the raw `alert` column (index.expand_alerts_to_grid).
-    `sources` keys: 'waves' (massive attacks), 'daily' (missile tempo), optional 'ucdp'.
+    `sources` keys: 'waves' (massive attacks), 'daily' (missile tempo), optional 'ucdp',
+    optional 'threat' (a {channels,values,windows} dict overriding the config allowlist —
+    the onset model passes its revival set; default None = config = empty for whether).
     Leak-safety is structural (shifts only); see module docstring.
     """
     if "alert" not in grid.columns:
         raise ValueError("grid needs raw 'alert' column — run expand_alerts_to_grid first")
 
+    threat = sources.get("threat") or {}
     out = add_lag_features(grid)
     out = add_calendar_features(out)
     if sources.get("waves") is not None:
-        out = add_threat_features(out, sources["waves"])
+        out = add_threat_features(out, sources["waves"], **threat)
     if sources.get("daily") is not None:
         out = add_tempo_features(out, sources["daily"])
     out = add_ucdp_features(out, sources.get("ucdp"))

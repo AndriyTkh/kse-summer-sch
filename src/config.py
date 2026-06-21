@@ -48,6 +48,17 @@ THREAT_CHANNELS: tuple[str, ...] = ()                       # deprecated -> empt
 THREAT_VALUES: tuple[str, ...] = ("launched",)             # revival set for onset model
 THREAT_WINDOWS: tuple[int, ...] = (6, 24)                  # revival set for onset model
 
+# --- ONSET model (alt approach: "when does a NEW alert start", not "whether") --------
+# Parallel pipeline to B (run_onset.py / model_onset.py). The whether-target is hollow
+# (monotone in H, persistence-driven); the onset target asks "does a NEW alert START in
+# (t, t+H], evaluated only from a QUIET state (no alert active at t)" — a real forecasting
+# signal where threat LEADING indicators should finally pay off. Threat is REVIVED here
+# (the Phase-4 lean allowlist: launched / {6,24}h / 3 strike channels) without disturbing
+# the whether-model's empty THREAT_CHANNELS. build_feature_matrix takes a per-run override.
+ONSET_THREAT_CHANNELS: tuple[str, ...] = ("ballistic", "air-cruise", "drone-strike")
+ONSET_THREAT_VALUES: tuple[str, ...] = ("launched",)
+ONSET_THREAT_WINDOWS: tuple[int, ...] = (6, 24)
+
 # --- quantile prediction intervals (Phase 3, Model Bq) -------------------
 # B outputs a point probability; Bq regresses the continuous alert-FRACTION over
 # (t, t+H] at several quantiles -> a calibrated uncertainty band per oblast×horizon.

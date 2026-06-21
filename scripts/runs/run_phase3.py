@@ -11,12 +11,18 @@ study only. See PLAN.md and the phase-4 write-down.
 
 Leak-safe by construction (features < t; temporal split). Bands currently UNDER-cover
 (~0.64 vs 0.80 nominal) — conformal fix queued (PLAN.md).
-Run: PYTHONUTF8=1 python run_phase3.py   (needs data/ — gitignored).
+Run: PYTHONUTF8=1 python scripts/runs/run_phase3.py   (needs data/ — gitignored).
 """
 
 from __future__ import annotations
 
+import sys
 import time
+from pathlib import Path
+
+# Partial moved under scripts/runs/ — put repo root on sys.path so `from src import`
+# resolves when run standalone (the combined base run.py imports src directly).
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import pandas as pd
 
