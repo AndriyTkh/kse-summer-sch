@@ -69,6 +69,7 @@ Sources:
 | Model | Tech | Resolution | Role |
 |---|---|---|---|
 | **B** | LightGBM | hourly | **Core.** 4 direct models (30m/1h/3h/6h) → oblast×horizon heatmap |
+| **Bq** | LightGBM (quantile) | hourly | Phase 3. Quantile regression on the alert-FRACTION → q10/q50/q90 prediction intervals (uncertainty bands) |
 | **A** | Prophet | daily | Long-horizon load/calendar baseline; B must beat it |
 | **Survival** | lifelines | per-event | Alert duration (time-to-all-clear) |
 | **C** | GRU (PyTorch) | hourly | Comparison only — expected to lose; report breadth |
@@ -116,9 +117,11 @@ PHASE 2 — duration:        survival (lifelines), reuses Phase-1 covariates    
                            Kaplan-Meier baseline + Cox PH with hourly features at
                            alert start. Censoring-aware (issue #7). Accuracy capped
                            until Phase-3 per-oblast swarm counts.
-PHASE 3+ — roadmap:        TG real-time scrape · nowcast tier · quantile intervals ·
-                           auto-retrain (drift) · C/TCN/TFT compare · Hawkes ·
-                           spatial wave-propagation · multi-channel OSINT fusion
+PHASE 3 — uncertainty:     quantile prediction intervals (Bq) + drift-triggered     ✅ DONE
+                           auto-retrain. Quantile LightGBM bands per horizon; PSI
+                           feature-drift detection drives walk-forward retrain harness.
+PHASE 3+ — roadmap:        TG real-time scrape · nowcast tier · C/TCN/TFT compare ·
+                           Hawkes · spatial wave-propagation · multi-channel OSINT fusion
 ```
 
 Phase-2 duration accuracy is capped until Phase-3 real-time per-oblast counts land
@@ -144,11 +147,14 @@ kse-summer-sch/
 │   ├── threat_map.py       model → threat-type table (7 channels, real-data verified)
 │   ├── features.py         lags, calendar, threat channels; UCDP prior [Phase 2]
 │   ├── model_b.py          4 direct LightGBM
+│   ├── model_bq.py         quantile LightGBM prediction intervals (Bq, Phase 3)
 │   ├── model_a.py          Prophet baseline
 │   ├── forecast.py         operational nowcast — forecast_now at the grid edge
 │   ├── operational_eval.py simulated vintage eval — backtest-vs-live gap quantification
 │   ├── survival.py         Phase-2 duration: KM + Cox PH alert time-to-all-clear
-│   ├── evaluate.py         temporal split + walk-forward CV, PR-AUC, calibration, heatmap
+│   ├── drift.py            PSI feature-drift detection (Phase 3)
+│   ├── retrain.py          walk-forward auto-retrain harness (Phase 3)
+│   ├── evaluate.py         temporal split + walk-forward CV, PR-AUC, calibration, heatmap, quantile metrics
 │   ├── viz_export.py       shared JSON serialize + write helper for the dashboard
 │   └── export_predictions.py  runs A+B → predictions.json + metrics.json (Phase-1 headline)
 ├── viz/                    React + MapLibre dashboard (build passes)
@@ -161,18 +167,22 @@ kse-summer-sch/
 ├── run_forecast.py         Phase-2: emit next-6h per-oblast nowcast (calibrated) → nowcast.json
 ├── run_operational_eval.py Phase-2: sweep source-lag scenarios, PR-AUC gap → operational.json
 ├── run_survival.py         Phase-2: KM + Cox PH duration model, C-index + MAE → survival.json
-├── tests/                  86 passing, 6 skipped (Prophet) — full pipeline + Phase-2
+├── run_phase3.py           Phase-3: Bq quantile intervals + drift-triggered auto-retrain
+├── tests/                  86 passing, 6 skipped (Prophet) — full pipeline + Phase-2/3
 │   ├── test_threat_map.py
 │   ├── test_index.py
 │   ├── test_loaders.py
 │   ├── test_features.py
 │   ├── test_model_a.py
 │   ├── test_model_b.py
+│   ├── test_model_bq.py        Phase-3: quantile interval monotonicity + coverage
 │   ├── test_evaluate.py
 │   ├── test_walk_forward.py    Phase-2: rolling-origin folds + B eval/summary
 │   ├── test_forecast.py        Phase-2: forecast_now edge nowcast
 │   ├── test_operational_eval.py Phase-2: degradation + gap direction
-│   └── test_survival.py        Phase-2: survival dataset, KM, Cox, temporal split
+│   ├── test_survival.py        Phase-2: survival dataset, KM, Cox, temporal split
+│   ├── test_drift.py           Phase-3: PSI drift detection
+│   └── test_retrain.py         Phase-3: auto-retrain harness
 ├── notebooks/
 │   └── eda.ipynb                                                   [planned]
 └── requirements.txt
@@ -230,9 +240,19 @@ MiG-31K airborne → Kinzhal ballistic ~10–40min (near-deterministic, country-
 horizons; Tu-95/Tu-160 from Engels → cruise wave 3–6h lead powers long horizons. Folded into
 structured data via the launch dataset's `launch_place` — no scrape needed for MVP.
 
+### Quantile intervals (Bq) and auto-retrain — Phase 3, BUILT
+Two MVP "accepted drawbacks" are now addressed:
+- **Uncertainty bands:** a probability has no spread to put a quantile on, so Bq regresses
+  the continuous **alert-fraction** over (t, t+H] (a real intensity in [0, 1]) at q10/q50/q90.
+  Per-row sort + clip removes quantile crossing. Scored by pinball + interval coverage/width
+  (the quantile analogue of PR-AUC/Brier). 30m/1h degenerate to the binary next hour (honest).
+- **Non-stationarity:** beyond recency weighting, an auto-retrain walk-forward (`retrain.py`)
+  operates the model forward block-by-block and adapts on **PSI feature drift** (`drift.py`),
+  scoring then adapting (no leak: purged trailing train windows, scored block never trained on).
+  Frozen-vs-adaptive pinball quantifies the drift cost the project's regime shift imposes.
+
 ### Accepted drawbacks
 - No native extrapolation (A patches trend at long horizon).
-- No free uncertainty bands (point estimate; quantile LightGBM = roadmap).
 - 6h event-timing ceiling (domain limit).
 - Single temporal holdout: one 8wk test window = one verdict, no variance estimate,
   one war regime. Honest + leak-safe but not robustness-proof; walk-forward = Phase 2.

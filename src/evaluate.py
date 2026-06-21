@@ -167,6 +167,36 @@ def expected_calibration_error(y_true, y_score, n_bins: int = 10) -> float:
     return float(ece)
 
 
+def pinball_loss(y_true, y_pred, alpha: float) -> float:
+    """Quantile (pinball) loss at level `alpha` — the proper score for Model Bq.
+
+    Penalizes under-prediction by `alpha` and over-prediction by `1-alpha`, so it is
+    minimized in expectation by the true `alpha`-quantile. Lower is better; this is the
+    quantile analogue of Brier for the interval forecast.
+    """
+    y_true = np.asarray(y_true, dtype=float)
+    y_pred = np.asarray(y_pred, dtype=float)
+    d = y_true - y_pred
+    return float(np.mean(np.maximum(alpha * d, (alpha - 1.0) * d)))
+
+
+def interval_coverage(y_true, low, high) -> float:
+    """Empirical coverage: fraction of `y_true` falling inside [low, high].
+
+    Should track the band's nominal level (e.g. ~0.80 for a q10–q90 interval).
+    Below nominal = over-confident bands; well above = needlessly wide.
+    """
+    y = np.asarray(y_true, dtype=float)
+    lo = np.asarray(low, dtype=float)
+    hi = np.asarray(high, dtype=float)
+    return float(np.mean((y >= lo) & (y <= hi)))
+
+
+def interval_width(low, high) -> float:
+    """Mean band width (sharpness). Narrower is better at equal coverage."""
+    return float(np.mean(np.asarray(high, dtype=float) - np.asarray(low, dtype=float)))
+
+
 def fit_isotonic(y_true, y_score) -> IsotonicRegression:
     """Fit isotonic regression mapping raw score -> calibrated probability (issue #10).
 

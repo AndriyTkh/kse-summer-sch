@@ -80,6 +80,31 @@ def test_fit_isotonic_clips_out_of_range_scores():
     assert (out >= 0).all() and (out <= 1).all()
 
 
+def test_pinball_loss_perfect_and_median():
+    y = np.array([0.0, 0.5, 1.0])
+    assert evaluate.pinball_loss(y, y, 0.5) == 0.0          # perfect -> 0
+    # at alpha=0.5 pinball is half the MAE
+    pred = np.array([0.2, 0.2, 0.2])
+    mae = np.mean(np.abs(y - pred))
+    assert abs(evaluate.pinball_loss(y, pred, 0.5) - 0.5 * mae) < 1e-12
+
+
+def test_pinball_loss_asymmetry():
+    # under-prediction at a high quantile is penalized more than over-prediction
+    y = np.array([1.0])
+    under = evaluate.pinball_loss(y, np.array([0.0]), 0.9)   # 0.9 * 1
+    over = evaluate.pinball_loss(np.array([0.0]), np.array([1.0]), 0.9)  # 0.1 * 1
+    assert under > over
+
+
+def test_interval_coverage_and_width():
+    y = np.array([0.1, 0.5, 0.9])
+    lo = np.array([0.0, 0.0, 0.0])
+    hi = np.array([0.5, 0.5, 0.5])
+    assert evaluate.interval_coverage(y, lo, hi) == 2 / 3    # 0.9 falls outside
+    assert evaluate.interval_width(lo, hi) == 0.5
+
+
 def test_compare_b_vs_a_table():
     idx = pd.MultiIndex.from_product([["kyivska"], pd.date_range("2024-05-01", periods=8, freq="h", tz="UTC")], names=["oblast", "ts_utc"])
     y = pd.DataFrame({"1h": [0, 0, 0, 0, 1, 1, 1, 1]}, index=idx)
