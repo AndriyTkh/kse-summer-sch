@@ -103,17 +103,15 @@ PHASE 2 — evaluation:      walk-forward backtest (rolling-origin CV) replacing
 PHASE 2 — nowcast:         forecast_now operational entrypoint — train on all data,   ✅ DONE
                            emit next-6h per-oblast calibrated probabilities at the
                            grid edge. Ragged-right-edge caveat carried in output.
-PHASE 2 — operational eval: forward/live forecast scored SEPARATELY from backtest.
+PHASE 2 — operational eval: forward/live forecast scored SEPARATELY from backtest.  ✅ DONE (simulated)
                            Backtest overstates live perf: not leakage (timestamp guard
                            is correct) but DATA AVAILABILITY — recent rows complete in
                            the historical CSV are missing/partial live (source publish
-                           lag = ragged right edge / nowcast problem). Honest test =
-                           real data VINTAGE: snapshot the sources at forecast time
-                           (e.g. before overnight refresh) into a separate dataset,
-                           predict next 6h, validate vs the later-updated source. The
-                           stale snapshot carries the true ragged edge -> no synthetic
-                           lag-masking needed. Report backtest-vs-operational gap as a
-                           headline (the real live capability).
+                           lag = ragged right edge / nowcast problem). Simulated vintage:
+                           degrade threat/tempo features by zeroing last N hours of the
+                           test fold, sweep multiple lag scenarios (3/6/12/24h), report
+                           backtest-vs-degraded PR-AUC gap per horizon. Real vintage
+                           snapshots (Phase 3 data pipeline) will replace the simulation.
 PHASE 2 — duration:        survival (lifelines), reuses Phase-1 covariates
 PHASE 3+ — roadmap:        TG real-time scrape · nowcast tier · quantile intervals ·
                            auto-retrain (drift) · C/TCN/TFT compare · Hawkes ·
@@ -144,12 +142,14 @@ kse-summer-sch/
 │   ├── features.py         lags, calendar, threat channels; UCDP prior [Phase 2]
 │   ├── model_b.py          4 direct LightGBM
 │   ├── model_a.py          Prophet baseline
-│   ├── forecast.py         operational nowcast — forecast_now at the grid edge [Phase 2]
+│   ├── forecast.py         operational nowcast — forecast_now at the grid edge
+│   ├── operational_eval.py simulated vintage eval — backtest-vs-live gap quantification
 │   └── evaluate.py         temporal split + walk-forward CV, PR-AUC, calibration, heatmap
 ├── run_mvp.py              Phase-1 headline: single-holdout B + A + artifacts
 ├── run_walkforward.py      Phase-2: rolling-origin CV (mean ± spread + drift)
 ├── run_forecast.py         Phase-2: emit next-6h per-oblast nowcast (calibrated)
-├── tests/                  73 passing, 6 skipped (Prophet) — full pipeline + Phase-2
+├── run_operational_eval.py Phase-2: sweep source-lag scenarios, report PR-AUC gap
+├── tests/                  79 passing, 6 skipped (Prophet) — full pipeline + Phase-2
 │   ├── test_threat_map.py
 │   ├── test_index.py
 │   ├── test_loaders.py
@@ -158,7 +158,8 @@ kse-summer-sch/
 │   ├── test_model_b.py
 │   ├── test_evaluate.py
 │   ├── test_walk_forward.py    Phase-2: rolling-origin folds + B eval/summary
-│   └── test_forecast.py        Phase-2: forecast_now edge nowcast
+│   ├── test_forecast.py        Phase-2: forecast_now edge nowcast
+│   └── test_operational_eval.py Phase-2: degradation + gap direction
 ├── notebooks/
 │   └── eda.ipynb                                                   [planned]
 └── requirements.txt
