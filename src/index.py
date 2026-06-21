@@ -17,20 +17,27 @@ from . import config
 
 
 def build_master_index(end=None, oblasts=None, start=None) -> pd.DataFrame:
-    """Empty (oblast x hour) grid, UTC, hourly, from `start` (WAR_START) to `end`.
+    """Empty (oblast x hour) grid, UTC, hourly, from `start` (>= GRID_START) to `end`.
 
     Returns a DataFrame with a MultiIndex (oblast, ts_utc) and no feature columns.
-    `end` defaults to now (UTC, floored to the hour).
+    `end` defaults to now (UTC, floored to the hour). `start` DEFAULTS to
+    config.GRID_START (2023-07): the production run_*.py scripts pass nothing and start
+    there (the 2022 ground-war regime is off-distribution — dropping it improves 6h,
+    leaves 1h flat; see config.GRID_START). An explicit `start` is honored as-is (unit
+    tests / a full-history study can pass an earlier date).
     """
-    start = pd.Timestamp(start or config.WAR_START, tz=config.TZ_GRID)
+    if start is None:
+        start = pd.Timestamp(config.GRID_START, tz=config.TZ_GRID)
+    else:
+        start = pd.Timestamp(start, tz=config.TZ_GRID)
     if end is None:
         end = pd.Timestamp.now(tz=config.TZ_GRID).floor(config.GRID_FREQ)
     else:
         end = pd.Timestamp(end, tz=config.TZ_GRID)
 
-    oblasts = list(oblasts) if oblasts is not None else list(config.OBLAST_CODES)
+    oblasts = list(oblasts) if oblasts is not None else list(config.MODEL_OBLASTS)
     if not oblasts:
-        raise ValueError("No oblasts: populate config.OBLAST_CODES or pass oblasts=")
+        raise ValueError("No oblasts: populate config.MODEL_OBLASTS or pass oblasts=")
 
     hours = pd.date_range(start, end, freq=config.GRID_FREQ, tz=config.TZ_GRID)
     idx = pd.MultiIndex.from_product([oblasts, hours], names=["oblast", "ts_utc"])

@@ -29,8 +29,7 @@ def main() -> None:
 
     # Start at first recorded alert (pre-data hours would be false zeros).
     # build_master_index re-localizes to UTC, so hand it a naive wall-clock.
-    start = alerts["start_utc"].min().floor("h").tz_convert("UTC").tz_localize(None)
-    grid = index.build_master_index(start=start)
+    grid = index.build_master_index()  # starts at config.GRID_START (2023-07)
     grid = index.expand_alerts_to_grid(grid, alerts)
     print(f"grid {len(grid):,} rows  ({grid.index.get_level_values('oblast').nunique()} oblasts)"
           f"  positives {int(grid.alert.sum()):,} ({grid.alert.mean():.3f})  [{time.time()-t0:.0f}s]")

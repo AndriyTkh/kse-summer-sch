@@ -36,12 +36,12 @@ def main() -> None:
     alerts = loaders.load_alerts()
     waves = loaders.load_massive_attacks()
     daily = loaders.load_missile_daily()
+    ucdp = loaders.load_ucdp()
 
-    start = alerts["start_utc"].min().floor("h").tz_convert("UTC").tz_localize(None)
-    grid = index.build_master_index(start=start)
+    grid = index.build_master_index()  # starts at config.GRID_START (2023-07)
     grid = index.expand_alerts_to_grid(grid, alerts)
 
-    fm = features.build_feature_matrix(grid, {"waves": waves, "daily": daily})
+    fm = features.build_feature_matrix(grid, {"waves": waves, "daily": daily, "ucdp": ucdp})
     rest, test = evaluate.temporal_split(fm)
     train_fit, calib = evaluate.temporal_split(rest, test_weeks=config.CALIB_WEEKS)
 

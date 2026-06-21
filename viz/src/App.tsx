@@ -11,6 +11,7 @@ import { useAlerts } from "./hooks/useAlerts";
 import { useJson } from "./hooks/useJson";
 import type {
   NowcastData, WalkForwardData, OperationalData, SurvivalData, PredictionSource,
+  IntervalData, DriftData,
 } from "./types";
 import type { Horizon } from "./utils/colorScale";
 import "./App.css";
@@ -22,6 +23,8 @@ export default function App() {
   const { data: walkForward } = useJson<WalkForwardData>("/walkforward.json", true);
   const { data: operational } = useJson<OperationalData>("/operational.json", true);
   const { data: survival } = useJson<SurvivalData>("/survival.json", true);
+  const { data: intervals } = useJson<IntervalData>("/intervals.json", true);
+  const { data: drift } = useJson<DriftData>("/drift.json", true);
   const alerts = useAlerts();
   const [horizon, setHorizon] = useState<Horizon>("1h");
   const [selected, setSelected] = useState<string | null>(null);
@@ -89,6 +92,8 @@ export default function App() {
               walkForward={walkForward}
               operational={operational}
               survival={survival}
+              intervals={intervals}
+              drift={drift}
             />
           )}
         </aside>

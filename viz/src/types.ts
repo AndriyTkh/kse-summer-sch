@@ -47,6 +47,43 @@ export interface OperationalData {
   >;
 }
 
+/** Quantile prediction intervals — Model Bq (run_phase3.py → intervals.json). */
+export interface IntervalData {
+  generated_utc: string;
+  forecast_base_utc: string;
+  test_weeks: number;
+  horizons: string[];
+  nominal_coverage: number;
+  by_horizon: Record<
+    string,
+    { pinball: number; coverage: number; width: number; base_fraction: number }
+  >;
+  predictions: Record<
+    string,
+    Record<Horizon, { q10: number; q50: number; q90: number } | null>
+  >;
+}
+
+/** Drift-triggered auto-retrain trajectory (run_phase3.py → drift.json). */
+export interface DriftData {
+  generated_utc: string;
+  horizon: string;
+  psi_warn: number;
+  psi_alert: number;
+  block_days: number;
+  policies: Record<
+    string,
+    { mean_pinball: number; retrains: number; mean_coverage: number }
+  >;
+  trajectory: {
+    block_start: string;
+    never: number;
+    periodic: number;
+    drift: number;
+    drift_retrained: boolean;
+  }[];
+}
+
 /** Alert-duration survival model (run_survival.py → survival.json). */
 export interface SurvivalData {
   generated_utc: string;

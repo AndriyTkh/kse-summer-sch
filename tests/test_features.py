@@ -43,8 +43,17 @@ def _waves(rows):
     return pd.DataFrame(rows, columns=["time_start_utc", "channels", "oblasts", "launched"])
 
 
-def test_threat_no_same_hour_leak():
+def _enable_threat(monkeypatch):
+    """Threat is DEPRECATED in prod (config.THREAT_CHANNELS=()); re-enable the full set
+    so the builder's leak-safety stays under test for the planned onset-model revival."""
+    monkeypatch.setattr(config, "THREAT_CHANNELS", ("ballistic", "drone-strike", "air-cruise"))
+    monkeypatch.setattr(config, "THREAT_VALUES", ("launched", "waves"))
+    monkeypatch.setattr(config, "THREAT_WINDOWS", (3, 6, 24))
+
+
+def test_threat_no_same_hour_leak(monkeypatch):
     """A wave launched in hour t must NOT count in thr_*_3h at t, only from t+1."""
+    _enable_threat(monkeypatch)
     g = _grid("2024-05-01 00:00", "2024-05-01 04:00", ["kyivska"])
     waves = _waves([
         (pd.Timestamp("2024-05-01 02:30", tz="UTC"), {"ballistic"}, ["kyivska"], 5.0),
@@ -56,8 +65,9 @@ def test_threat_no_same_hour_leak():
     assert r.loc["2024-05-01 03:00+00:00", "thr_ballistic_waves_3h"] == 1
 
 
-def test_threat_national_broadcast():
+def test_threat_national_broadcast(monkeypatch):
     """A wave with empty oblasts list reaches every oblast."""
+    _enable_threat(monkeypatch)
     g = _grid("2024-05-01 00:00", "2024-05-01 03:00", ["kyivska", "lvivska"])
     waves = _waves([
         (pd.Timestamp("2024-05-01 00:30", tz="UTC"), {"drone-strike"}, [], 10.0),
@@ -66,6 +76,31 @@ def test_threat_national_broadcast():
     for ob in ("kyivska", "lvivska"):
         r = out.xs(ob, level="oblast")
         assert r.loc["2024-05-01 01:00+00:00", "thr_drone-strike_launched_3h"] == 10
+
+
+def test_ucdp_prior_lagged_and_per_oblast():
+    """UCDP prior at year Y reads only years < Y (leak-safe) and separates oblasts."""
+    import numpy as np
+    g = _grid("2024-05-01 00:00", "2024-05-01 02:00", ["donetska", "lvivska"])
+    ucdp = pd.DataFrame({
+        "oblast": ["donetska", "donetska", "donetska", "lvivska"],
+        "year":   [2022,        2023,        2024,        2022],
+        "deaths": [100,         50,          9999,        1],     # 2024 must NOT leak
+        "events": [10,          5,           99,          1],
+    })
+    out = features.add_ucdp_features(g, ucdp)
+    don = out.xs("donetska", level="oblast")["ucdp_deaths_prior"].iloc[0]
+    lvi = out.xs("lvivska", level="oblast")["ucdp_deaths_prior"].iloc[0]
+    assert abs(don - np.log1p(150)) < 1e-9      # 2022+2023 only, 2024 excluded
+    assert abs(lvi - np.log1p(1)) < 1e-9
+    assert don > lvi                            # frontline >> western prior
+
+
+def test_ucdp_none_yields_zero_columns():
+    g = _grid("2024-05-01 00:00", "2024-05-01 02:00", ["kyivska"])
+    out = features.add_ucdp_features(g, None)
+    assert (out["ucdp_deaths_prior"] == 0).all()
+    assert (out["ucdp_events_prior"] == 0).all()
 
 
 def test_tempo_uses_previous_day():

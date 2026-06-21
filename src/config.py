@@ -17,12 +17,36 @@ ARTIFACTS_DIR = ROOT / "artifacts"  # models, plots, metrics (gitignored)
 TZ_LOCAL = "Europe/Kyiv"   # watch DST when converting
 TZ_GRID = "UTC"
 GRID_FREQ = "1h"
-WAR_START = "2022-02-24"   # grid origin
+WAR_START = "2022-02-24"   # true war origin (used for day_of_war feature only)
+# Modeling-grid origin. A learning-curve sweep (fixed recent-2mo test, growing train depth)
+# showed: 1h accuracy plateaus by ~4 months; 6h keeps gaining slowly to ~2.8yr then flattens;
+# the ONLY clearly-droppable slice is the 2022 ground-war regime (frontline-LOCAL alerts, not
+# the nationwide strategic-strike pattern the model targets), which adds nothing and mildly
+# dilutes 6h. Clamping at 2023-07 (~1030d before the test edge) put 6h at its peak (0.930,
+# slightly ABOVE full history), left 1h flat, kept per-oblast lift, and cut ~31% of rows.
+# Applies to BOTH B and Bq (both build on build_master_index). day_of_war still counts from
+# WAR_START. Full history stays loadable by passing oblasts=/start= explicitly. See the
+# 2026-06-21 phase-4 write-down for the curve.
+GRID_START = "2023-07-01"
 
 # --- horizons (direct multi-horizon: one model per horizon) --------------
 # Targets are FUTURE windows t -> t+H. Leak guard: features at t use data < t only.
 HORIZONS = ["30m", "1h", "3h", "6h"]
 HORIZON_HOURS = {"30m": 0.5, "1h": 1, "3h": 3, "6h": 6}
+
+# --- threat-feature allowlist (Phase 4) ----------------------------------
+# DEPRECATED for the current "whether an alert fires" model. The full cross-product
+# (7 channels x {launched,waves} x {3,6,24}h = 36 cols) added only ~+1% PR-AUC, and a
+# gain probe traced that to the target: predicting a PERSISTENT alert state needs only
+# autocorrelation (recent lags), so launch/threat leading-indicators barely help. They
+# are LEADING indicators of a NEW strike — exactly what the planned ONSET / time-to-next
+# model targets. So threat is dropped here (THREAT_CHANNELS empty -> no threat columns)
+# and queued for revival in the onset reframe (see PLAN.md next session). The prune
+# allowlist below (launched / {6,24}h / 3 channels) is the validated lean set to bring
+# back then — widen the tuples to restore. See the 2026-06-21 phase-4 write-down.
+THREAT_CHANNELS: tuple[str, ...] = ()                       # deprecated -> empty
+THREAT_VALUES: tuple[str, ...] = ("launched",)             # revival set for onset model
+THREAT_WINDOWS: tuple[int, ...] = (6, 24)                  # revival set for onset model
 
 # --- quantile prediction intervals (Phase 3, Model Bq) -------------------
 # B outputs a point probability; Bq regresses the continuous alert-FRACTION over
@@ -103,6 +127,16 @@ OBLAST_CODES: list[str] = [
 # Fast identity lookup: a stripped name that already equals a canonical code
 # (e.g. "Cherkaska oblast" -> "cherkaska") is valid as-is.
 OBLAST_CODE_SET: frozenset[str] = frozenset(OBLAST_CODES)
+
+# Oblasts excluded from the modeling grid: occupied territory the siren dataset does
+# NOT cover -> near-zero alert base rate (crimea 0.0%, sevastopol 0.0%, luhanska 0.2%).
+# They are dead rows (no signal, unpredictable), not a metric-inflation problem. The
+# near-PERMANENT frontline (dnipropetrovska ~82%, kharkivska/donetska ~67%) is KEPT and
+# instead handled by per-oblast PR-AUC-vs-base-rate (lift) reporting so its trivial
+# high base rate can't hide inside the aggregate. OBLAST_CODES stays the full canonical
+# 27 (loaders/normalization need it); the grid is built from MODEL_OBLASTS.
+EXCLUDED_OBLASTS: frozenset[str] = frozenset({"crimea", "sevastopol", "luhanska"})
+MODEL_OBLASTS: list[str] = [o for o in OBLAST_CODES if o not in EXCLUDED_OBLASTS]
 
 # Source region name -> ADM1 code (issue #4). Keys are lowercased, " oblast" stripped.
 # Covers the `affected region` vocabulary in the Kaggle wave file + common city aliases.
