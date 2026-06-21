@@ -1,673 +1,673 @@
 {
-  "generated_utc": "2026-06-21T19:36:51.043296+00:00",
+  "generated_utc": "2026-06-21T20:01:19.965076+00:00",
   "test_weeks": 8,
   "aggregate": {
     "30m": {
-      "base_rate": 0.36294,
-      "pr_auc_b": 0.892027,
-      "pr_auc_a": 0.868298,
-      "lift": 1.027328,
-      "ece_b": 0.009172,
-      "ece_a": 0.042716,
-      "brier_b": 0.099514,
-      "brier_a": 0.113335
+      "base_rate": 0.362754,
+      "pr_auc_b": 0.89237,
+      "pr_auc_a": 0.867454,
+      "lift": 1.028723,
+      "ece_b": 0.008953,
+      "ece_a": 0.043021,
+      "brier_b": 0.099508,
+      "brier_a": 0.113551
     },
     "1h": {
-      "base_rate": 0.36294,
-      "pr_auc_b": 0.892027,
-      "pr_auc_a": 0.868298,
-      "lift": 1.027328,
-      "ece_b": 0.009172,
-      "ece_a": 0.042716,
-      "brier_b": 0.099514,
-      "brier_a": 0.113335
+      "base_rate": 0.362754,
+      "pr_auc_b": 0.89237,
+      "pr_auc_a": 0.867454,
+      "lift": 1.028723,
+      "ece_b": 0.008953,
+      "ece_a": 0.043021,
+      "brier_b": 0.099508,
+      "brier_a": 0.113551
     },
     "3h": {
-      "base_rate": 0.450552,
-      "pr_auc_b": 0.901008,
-      "pr_auc_a": 0.8904,
-      "lift": 1.011914,
-      "ece_b": 0.021904,
-      "ece_a": 0.110962,
-      "brier_b": 0.121141,
-      "brier_a": 0.146347
+      "base_rate": 0.450335,
+      "pr_auc_b": 0.902744,
+      "pr_auc_a": 0.889599,
+      "lift": 1.014777,
+      "ece_b": 0.023605,
+      "ece_a": 0.110734,
+      "brier_b": 0.119253,
+      "brier_a": 0.146439
     },
     "6h": {
-      "base_rate": 0.528398,
-      "pr_auc_b": 0.908515,
-      "pr_auc_a": 0.9102,
-      "lift": 0.998149,
-      "ece_b": 0.029812,
-      "ece_a": 0.18763,
-      "brier_b": 0.134551,
-      "brier_a": 0.186106
+      "base_rate": 0.52815,
+      "pr_auc_b": 0.912512,
+      "pr_auc_a": 0.90945,
+      "lift": 1.003367,
+      "ece_b": 0.026455,
+      "ece_a": 0.187371,
+      "brier_b": 0.131527,
+      "brier_a": 0.186085
     }
   },
   "per_oblast": {
     "cherkaska": {
       "30m": {
-        "pr_auc_b": 0.365787,
+        "pr_auc_b": 0.371751,
         "base_rate": 0.21131,
-        "mean_pred": 0.208279,
+        "mean_pred": 0.212098,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.365787,
+        "pr_auc_b": 0.371751,
         "base_rate": 0.21131,
-        "mean_pred": 0.208279,
+        "mean_pred": 0.212098,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.467735,
+        "pr_auc_b": 0.46623,
         "base_rate": 0.357887,
-        "mean_pred": 0.348276,
+        "mean_pred": 0.359354,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.628157,
+        "pr_auc_b": 0.627475,
         "base_rate": 0.510417,
-        "mean_pred": 0.477427,
+        "mean_pred": 0.476338,
         "n_samples": 1344
       }
     },
     "chernihivska": {
       "30m": {
-        "pr_auc_b": 0.939409,
-        "base_rate": 0.835565,
-        "mean_pred": 0.813857,
+        "pr_auc_b": 0.937181,
+        "base_rate": 0.834821,
+        "mean_pred": 0.806267,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.939409,
-        "base_rate": 0.835565,
-        "mean_pred": 0.813857,
+        "pr_auc_b": 0.937181,
+        "base_rate": 0.834821,
+        "mean_pred": 0.806267,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.98112,
-        "base_rate": 0.907738,
-        "mean_pred": 0.919085,
+        "pr_auc_b": 0.976982,
+        "base_rate": 0.906994,
+        "mean_pred": 0.911954,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.990677,
-        "base_rate": 0.941964,
-        "mean_pred": 0.967678,
+        "pr_auc_b": 0.992296,
+        "base_rate": 0.94122,
+        "mean_pred": 0.964388,
         "n_samples": 1344
       }
     },
     "chernivetska": {
       "30m": {
-        "pr_auc_b": 0.06927,
+        "pr_auc_b": 0.089952,
         "base_rate": 0.037946,
-        "mean_pred": 0.047324,
+        "mean_pred": 0.044873,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.06927,
+        "pr_auc_b": 0.089952,
         "base_rate": 0.037946,
-        "mean_pred": 0.047324,
+        "mean_pred": 0.044873,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.102329,
+        "pr_auc_b": 0.124597,
         "base_rate": 0.070685,
-        "mean_pred": 0.091981,
+        "mean_pred": 0.090896,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.112741,
+        "pr_auc_b": 0.140898,
         "base_rate": 0.112351,
-        "mean_pred": 0.180958,
+        "mean_pred": 0.173239,
         "n_samples": 1344
       }
     },
     "crimea": {},
     "dnipropetrovska": {
       "30m": {
-        "pr_auc_b": 0.997413,
-        "base_rate": 0.984375,
-        "mean_pred": 0.993088,
+        "pr_auc_b": 0.99744,
+        "base_rate": 0.983631,
+        "mean_pred": 0.992898,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.997413,
-        "base_rate": 0.984375,
-        "mean_pred": 0.993088,
+        "pr_auc_b": 0.99744,
+        "base_rate": 0.983631,
+        "mean_pred": 0.992898,
         "n_samples": 1344
       },
       "3h": {
         "pr_auc_b": 0.999242,
-        "base_rate": 0.985119,
-        "mean_pred": 0.998092,
+        "base_rate": 0.984375,
+        "mean_pred": 0.997955,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.996981,
-        "base_rate": 0.985119,
-        "mean_pred": 0.999268,
+        "pr_auc_b": 0.996986,
+        "base_rate": 0.984375,
+        "mean_pred": 0.999042,
         "n_samples": 1344
       }
     },
     "donetska": {
       "30m": {
-        "pr_auc_b": 0.992944,
-        "base_rate": 0.968006,
-        "mean_pred": 0.970529,
+        "pr_auc_b": 0.992389,
+        "base_rate": 0.967262,
+        "mean_pred": 0.971967,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.992944,
-        "base_rate": 0.968006,
-        "mean_pred": 0.970529,
+        "pr_auc_b": 0.992389,
+        "base_rate": 0.967262,
+        "mean_pred": 0.971967,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.993021,
-        "base_rate": 0.979911,
-        "mean_pred": 0.995968,
+        "pr_auc_b": 0.9944,
+        "base_rate": 0.979167,
+        "mean_pred": 0.996576,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.995802,
-        "base_rate": 0.984375,
-        "mean_pred": 0.998211,
+        "pr_auc_b": 0.995967,
+        "base_rate": 0.983631,
+        "mean_pred": 0.997807,
         "n_samples": 1344
       }
     },
     "ivano-frankivska": {
       "30m": {
-        "pr_auc_b": 0.04142,
+        "pr_auc_b": 0.03703,
         "base_rate": 0.02753,
-        "mean_pred": 0.041228,
+        "mean_pred": 0.041086,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.04142,
+        "pr_auc_b": 0.03703,
         "base_rate": 0.02753,
-        "mean_pred": 0.041228,
+        "mean_pred": 0.041086,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.061509,
+        "pr_auc_b": 0.057329,
         "base_rate": 0.052827,
-        "mean_pred": 0.090918,
+        "mean_pred": 0.086704,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.069952,
+        "pr_auc_b": 0.083058,
         "base_rate": 0.085565,
-        "mean_pred": 0.171932,
+        "mean_pred": 0.15435,
         "n_samples": 1344
       }
     },
     "kharkivska": {
       "30m": {
-        "pr_auc_b": 0.982325,
-        "base_rate": 0.959077,
-        "mean_pred": 0.951826,
+        "pr_auc_b": 0.98225,
+        "base_rate": 0.958333,
+        "mean_pred": 0.954952,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.982325,
-        "base_rate": 0.959077,
-        "mean_pred": 0.951826,
+        "pr_auc_b": 0.98225,
+        "base_rate": 0.958333,
+        "mean_pred": 0.954952,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.998463,
-        "base_rate": 0.984375,
-        "mean_pred": 0.990309,
+        "pr_auc_b": 0.997254,
+        "base_rate": 0.983631,
+        "mean_pred": 0.990335,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.99717,
-        "base_rate": 0.985119,
-        "mean_pred": 0.99757,
+        "pr_auc_b": 0.997349,
+        "base_rate": 0.984375,
+        "mean_pred": 0.997066,
         "n_samples": 1344
       }
     },
     "khersonska": {
       "30m": {
-        "pr_auc_b": 0.424108,
+        "pr_auc_b": 0.429746,
         "base_rate": 0.363095,
-        "mean_pred": 0.378114,
+        "mean_pred": 0.370056,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.424108,
+        "pr_auc_b": 0.429746,
         "base_rate": 0.363095,
-        "mean_pred": 0.378114,
+        "mean_pred": 0.370056,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.644376,
+        "pr_auc_b": 0.662894,
         "base_rate": 0.587054,
-        "mean_pred": 0.563492,
+        "mean_pred": 0.555474,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.819112,
+        "pr_auc_b": 0.82686,
         "base_rate": 0.758929,
-        "mean_pred": 0.676877,
+        "mean_pred": 0.661067,
         "n_samples": 1344
       }
     },
     "khmelnytska": {
       "30m": {
-        "pr_auc_b": 0.208994,
+        "pr_auc_b": 0.201173,
         "base_rate": 0.065476,
-        "mean_pred": 0.067652,
+        "mean_pred": 0.064388,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.208994,
+        "pr_auc_b": 0.201173,
         "base_rate": 0.065476,
-        "mean_pred": 0.067652,
+        "mean_pred": 0.064388,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.225474,
+        "pr_auc_b": 0.23277,
         "base_rate": 0.113095,
-        "mean_pred": 0.128168,
+        "mean_pred": 0.123956,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.232388,
+        "pr_auc_b": 0.250124,
         "base_rate": 0.176339,
-        "mean_pred": 0.206992,
+        "mean_pred": 0.206336,
         "n_samples": 1344
       }
     },
     "kyivska": {
       "30m": {
-        "pr_auc_b": 0.535766,
+        "pr_auc_b": 0.526822,
         "base_rate": 0.345238,
-        "mean_pred": 0.319688,
+        "mean_pred": 0.322884,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.535766,
+        "pr_auc_b": 0.526822,
         "base_rate": 0.345238,
-        "mean_pred": 0.319688,
+        "mean_pred": 0.322884,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.657512,
+        "pr_auc_b": 0.672309,
         "base_rate": 0.506696,
-        "mean_pred": 0.501856,
+        "mean_pred": 0.50437,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.816527,
+        "pr_auc_b": 0.819584,
         "base_rate": 0.643601,
-        "mean_pred": 0.629614,
+        "mean_pred": 0.625114,
         "n_samples": 1344
       }
     },
     "kyiv-city": {
       "30m": {
-        "pr_auc_b": 0.227206,
+        "pr_auc_b": 0.232395,
         "base_rate": 0.123512,
-        "mean_pred": 0.130901,
+        "mean_pred": 0.128305,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.227206,
+        "pr_auc_b": 0.232395,
         "base_rate": 0.123512,
-        "mean_pred": 0.130901,
+        "mean_pred": 0.128305,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.335353,
+        "pr_auc_b": 0.348021,
         "base_rate": 0.232887,
-        "mean_pred": 0.240437,
+        "mean_pred": 0.23299,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.43603,
+        "pr_auc_b": 0.450524,
         "base_rate": 0.354167,
-        "mean_pred": 0.337217,
+        "mean_pred": 0.337902,
         "n_samples": 1344
       }
     },
     "kirovohradska": {
       "30m": {
-        "pr_auc_b": 0.384472,
+        "pr_auc_b": 0.362536,
         "base_rate": 0.250744,
-        "mean_pred": 0.240937,
+        "mean_pred": 0.24391,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.384472,
+        "pr_auc_b": 0.362536,
         "base_rate": 0.250744,
-        "mean_pred": 0.240937,
+        "mean_pred": 0.24391,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.510593,
+        "pr_auc_b": 0.518432,
         "base_rate": 0.418155,
-        "mean_pred": 0.412744,
+        "mean_pred": 0.427617,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.645752,
-        "base_rate": 0.58631,
-        "mean_pred": 0.53083,
+        "pr_auc_b": 0.659655,
+        "base_rate": 0.585565,
+        "mean_pred": 0.533478,
         "n_samples": 1344
       }
     },
     "luhanska": {},
     "lvivska": {
       "30m": {
-        "pr_auc_b": 0.045294,
+        "pr_auc_b": 0.042979,
         "base_rate": 0.02753,
-        "mean_pred": 0.052647,
+        "mean_pred": 0.054223,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.045294,
+        "pr_auc_b": 0.042979,
         "base_rate": 0.02753,
-        "mean_pred": 0.052647,
+        "mean_pred": 0.054223,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.069621,
+        "pr_auc_b": 0.070755,
         "base_rate": 0.053571,
-        "mean_pred": 0.102241,
+        "mean_pred": 0.08982,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.082471,
+        "pr_auc_b": 0.085631,
         "base_rate": 0.08631,
-        "mean_pred": 0.170016,
+        "mean_pred": 0.159369,
         "n_samples": 1344
       }
     },
     "mykolaivska": {
       "30m": {
-        "pr_auc_b": 0.426014,
+        "pr_auc_b": 0.442607,
         "base_rate": 0.36756,
-        "mean_pred": 0.362848,
+        "mean_pred": 0.369963,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.426014,
+        "pr_auc_b": 0.442607,
         "base_rate": 0.36756,
-        "mean_pred": 0.362848,
+        "mean_pred": 0.369963,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.665245,
+        "pr_auc_b": 0.684762,
         "base_rate": 0.592262,
-        "mean_pred": 0.56754,
+        "mean_pred": 0.567229,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.826293,
+        "pr_auc_b": 0.835031,
         "base_rate": 0.767857,
-        "mean_pred": 0.724931,
+        "mean_pred": 0.694551,
         "n_samples": 1344
       }
     },
     "odeska": {
       "30m": {
-        "pr_auc_b": 0.379691,
+        "pr_auc_b": 0.38259,
         "base_rate": 0.30878,
-        "mean_pred": 0.307279,
+        "mean_pred": 0.313156,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.379691,
+        "pr_auc_b": 0.38259,
         "base_rate": 0.30878,
-        "mean_pred": 0.307279,
+        "mean_pred": 0.313156,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.588591,
-        "base_rate": 0.528274,
-        "mean_pred": 0.508557,
+        "pr_auc_b": 0.586339,
+        "base_rate": 0.52753,
+        "mean_pred": 0.521173,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.742837,
-        "base_rate": 0.710565,
-        "mean_pred": 0.675939,
+        "pr_auc_b": 0.760973,
+        "base_rate": 0.709821,
+        "mean_pred": 0.659803,
         "n_samples": 1344
       }
     },
     "poltavska": {
       "30m": {
-        "pr_auc_b": 0.652967,
+        "pr_auc_b": 0.654538,
         "base_rate": 0.517857,
-        "mean_pred": 0.501693,
+        "mean_pred": 0.48455,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.652967,
+        "pr_auc_b": 0.654538,
         "base_rate": 0.517857,
-        "mean_pred": 0.501693,
+        "mean_pred": 0.48455,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.822571,
+        "pr_auc_b": 0.819673,
         "base_rate": 0.703869,
-        "mean_pred": 0.698199,
+        "mean_pred": 0.691636,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.906881,
+        "pr_auc_b": 0.926593,
         "base_rate": 0.83631,
-        "mean_pred": 0.843404,
+        "mean_pred": 0.847764,
         "n_samples": 1344
       }
     },
     "rivnenska": {
       "30m": {
-        "pr_auc_b": 0.222564,
+        "pr_auc_b": 0.211899,
         "base_rate": 0.095238,
-        "mean_pred": 0.107611,
+        "mean_pred": 0.108996,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.222564,
+        "pr_auc_b": 0.211899,
         "base_rate": 0.095238,
-        "mean_pred": 0.107611,
+        "mean_pred": 0.108996,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.267061,
+        "pr_auc_b": 0.286275,
         "base_rate": 0.162946,
-        "mean_pred": 0.186338,
+        "mean_pred": 0.180831,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.338952,
+        "pr_auc_b": 0.343349,
         "base_rate": 0.24256,
-        "mean_pred": 0.264315,
+        "mean_pred": 0.253625,
         "n_samples": 1344
       }
     },
     "sevastopol": {},
     "sumska": {
       "30m": {
-        "pr_auc_b": 0.963496,
-        "base_rate": 0.90625,
-        "mean_pred": 0.895468,
+        "pr_auc_b": 0.959336,
+        "base_rate": 0.905506,
+        "mean_pred": 0.899653,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.963496,
-        "base_rate": 0.90625,
-        "mean_pred": 0.895468,
+        "pr_auc_b": 0.959336,
+        "base_rate": 0.905506,
+        "mean_pred": 0.899653,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.997416,
-        "base_rate": 0.958333,
-        "mean_pred": 0.968097,
+        "pr_auc_b": 0.996563,
+        "base_rate": 0.957589,
+        "mean_pred": 0.968918,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.996027,
-        "base_rate": 0.970238,
-        "mean_pred": 0.990892,
+        "pr_auc_b": 0.99716,
+        "base_rate": 0.969494,
+        "mean_pred": 0.991302,
         "n_samples": 1344
       }
     },
     "ternopilska": {
       "30m": {
-        "pr_auc_b": 0.090856,
+        "pr_auc_b": 0.090376,
         "base_rate": 0.03497,
-        "mean_pred": 0.04582,
+        "mean_pred": 0.04473,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.090856,
+        "pr_auc_b": 0.090376,
         "base_rate": 0.03497,
-        "mean_pred": 0.04582,
+        "mean_pred": 0.04473,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.068241,
+        "pr_auc_b": 0.078514,
         "base_rate": 0.061756,
-        "mean_pred": 0.097737,
+        "mean_pred": 0.098149,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.089033,
+        "pr_auc_b": 0.102037,
         "base_rate": 0.096726,
-        "mean_pred": 0.179696,
+        "mean_pred": 0.167275,
         "n_samples": 1344
       }
     },
     "vinnytska": {
       "30m": {
-        "pr_auc_b": 0.233992,
+        "pr_auc_b": 0.255352,
         "base_rate": 0.084077,
-        "mean_pred": 0.110935,
+        "mean_pred": 0.104893,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.233992,
+        "pr_auc_b": 0.255352,
         "base_rate": 0.084077,
-        "mean_pred": 0.110935,
+        "mean_pred": 0.104893,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.276575,
+        "pr_auc_b": 0.291727,
         "base_rate": 0.142857,
-        "mean_pred": 0.183839,
+        "mean_pred": 0.184766,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.304598,
+        "pr_auc_b": 0.344925,
         "base_rate": 0.21875,
-        "mean_pred": 0.291867,
+        "mean_pred": 0.279145,
         "n_samples": 1344
       }
     },
     "volynska": {
       "30m": {
-        "pr_auc_b": 0.054017,
+        "pr_auc_b": 0.057029,
         "base_rate": 0.041667,
-        "mean_pred": 0.049813,
+        "mean_pred": 0.0457,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.054017,
+        "pr_auc_b": 0.057029,
         "base_rate": 0.041667,
-        "mean_pred": 0.049813,
+        "mean_pred": 0.0457,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.084347,
+        "pr_auc_b": 0.08502,
         "base_rate": 0.078869,
-        "mean_pred": 0.096864,
+        "mean_pred": 0.089201,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.1208,
+        "pr_auc_b": 0.125515,
         "base_rate": 0.129464,
-        "mean_pred": 0.157969,
+        "mean_pred": 0.149823,
         "n_samples": 1344
       }
     },
     "zakarpatska": {
       "30m": {
-        "pr_auc_b": 0.029953,
+        "pr_auc_b": 0.034457,
         "base_rate": 0.025298,
-        "mean_pred": 0.037932,
+        "mean_pred": 0.035119,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.029953,
+        "pr_auc_b": 0.034457,
         "base_rate": 0.025298,
-        "mean_pred": 0.037932,
+        "mean_pred": 0.035119,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.050846,
+        "pr_auc_b": 0.053796,
         "base_rate": 0.050595,
-        "mean_pred": 0.078597,
+        "mean_pred": 0.077943,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.070105,
+        "pr_auc_b": 0.083134,
         "base_rate": 0.083333,
-        "mean_pred": 0.143023,
+        "mean_pred": 0.125672,
         "n_samples": 1344
       }
     },
     "zaporizka": {
       "30m": {
-        "pr_auc_b": 0.96956,
-        "base_rate": 0.932292,
-        "mean_pred": 0.913873,
+        "pr_auc_b": 0.969955,
+        "base_rate": 0.931548,
+        "mean_pred": 0.912769,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.96956,
-        "base_rate": 0.932292,
-        "mean_pred": 0.913873,
+        "pr_auc_b": 0.969955,
+        "base_rate": 0.931548,
+        "mean_pred": 0.912769,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.995784,
-        "base_rate": 0.969494,
-        "mean_pred": 0.983748,
+        "pr_auc_b": 0.993873,
+        "base_rate": 0.96875,
+        "mean_pred": 0.983962,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.99608,
-        "base_rate": 0.978423,
-        "mean_pred": 0.997397,
+        "pr_auc_b": 0.996337,
+        "base_rate": 0.977679,
+        "mean_pred": 0.997501,
         "n_samples": 1344
       }
     },
     "zhytomyrska": {
       "30m": {
-        "pr_auc_b": 0.406211,
+        "pr_auc_b": 0.395067,
         "base_rate": 0.197173,
-        "mean_pred": 0.197502,
+        "mean_pred": 0.195856,
         "n_samples": 1344
       },
       "1h": {
-        "pr_auc_b": 0.406211,
+        "pr_auc_b": 0.395067,
         "base_rate": 0.197173,
-        "mean_pred": 0.197502,
+        "mean_pred": 0.195856,
         "n_samples": 1344
       },
       "3h": {
-        "pr_auc_b": 0.491697,
+        "pr_auc_b": 0.502847,
         "base_rate": 0.313988,
-        "mean_pred": 0.306343,
+        "mean_pred": 0.317023,
         "n_samples": 1344
       },
       "6h": {
-        "pr_auc_b": 0.619205,
+        "pr_auc_b": 0.620469,
         "base_rate": 0.436756,
-        "mean_pred": 0.405907,
+        "mean_pred": 0.411199,
         "n_samples": 1344
       }
     }
@@ -675,101 +675,101 @@
   "calibration_curves": {
     "30m": {
       "frac_pos": [
-        0.027431,
-        0.033182,
-        0.049014,
-        0.103706,
-        0.155635,
-        0.292835,
-        0.433159,
-        0.769358,
-        0.970173,
-        0.992658
+        0.027786,
+        0.033546,
+        0.058435,
+        0.087128,
+        0.181414,
+        0.300554,
+        0.413542,
+        0.702197,
+        0.969946,
+        0.991926
       ],
       "mean_pred": [
-        0.008609,
-        0.03326,
-        0.06843,
-        0.102767,
-        0.152685,
-        0.286647,
-        0.478372,
-        0.771491,
-        0.957643,
-        0.994945
+        0.00954,
+        0.034785,
+        0.064181,
+        0.101864,
+        0.176591,
+        0.29064,
+        0.446672,
+        0.709022,
+        0.956429,
+        0.995146
       ]
     },
     "1h": {
       "frac_pos": [
-        0.027431,
-        0.033182,
-        0.049014,
-        0.103706,
-        0.155635,
-        0.292835,
-        0.433159,
-        0.769358,
-        0.970173,
-        0.992658
+        0.027786,
+        0.033546,
+        0.058435,
+        0.087128,
+        0.181414,
+        0.300554,
+        0.413542,
+        0.702197,
+        0.969946,
+        0.991926
       ],
       "mean_pred": [
-        0.008609,
-        0.03326,
-        0.06843,
-        0.102767,
-        0.152685,
-        0.286647,
-        0.478372,
-        0.771491,
-        0.957643,
-        0.994945
+        0.00954,
+        0.034785,
+        0.064181,
+        0.101864,
+        0.176591,
+        0.29064,
+        0.446672,
+        0.709022,
+        0.956429,
+        0.995146
       ]
     },
     "3h": {
       "frac_pos": [
-        0.057101,
-        0.078947,
-        0.090066,
-        0.18856,
-        0.298218,
-        0.487148,
-        0.615172,
-        0.837811,
-        0.996752
+        0.05702,
+        0.076212,
+        0.092131,
+        0.154438,
+        0.314084,
+        0.482301,
+        0.609953,
+        0.827996,
+        0.994819
       ],
       "mean_pred": [
-        0.01876,
-        0.08116,
-        0.128889,
-        0.192527,
-        0.297068,
-        0.490755,
-        0.684565,
-        0.890404,
-        0.997744
+        0.024224,
+        0.06902,
+        0.119234,
+        0.166342,
+        0.342143,
+        0.458645,
+        0.648573,
+        0.877969,
+        0.996926
       ]
     },
     "6h": {
       "frac_pos": [
-        0.10173,
-        0.137835,
-        0.203239,
-        0.295588,
-        0.424194,
-        0.593742,
-        0.784186,
-        0.958897,
-        0.997178
+        0.09909,
+        0.145563,
+        0.191181,
+        0.280708,
+        0.440836,
+        0.610498,
+        0.730733,
+        0.902076,
+        0.997356
       ],
       "mean_pred": [
-        0.041915,
-        0.130434,
-        0.25343,
-        0.324142,
-        0.434163,
-        0.611888,
-        0.847058,
-        0.986347,
+        0.056556,
+        0.125428,
+        0.206103,
+        0.344917,
+        0.47515,
+        0.576795,
+        0.757184,
+        0.947543,
         1.0
       ]
     }
