@@ -69,6 +69,7 @@ Sources:
 | Model | Tech | Resolution | Role |
 |---|---|---|---|
 | **B** | LightGBM | hourly | **Core.** 4 direct models (30m/1h/3h/6h) → oblast×horizon heatmap |
+| **Bq** | LightGBM (quantile) | hourly | Phase 3. Quantile regression on the alert-FRACTION → q10/q50/q90 prediction intervals (uncertainty bands) |
 | **A** | Prophet | daily | Long-horizon load/calendar baseline; B must beat it |
 | **Survival** | lifelines | per-event | Alert duration (time-to-all-clear) |
 | **C** | GRU (PyTorch) | hourly | Comparison only — expected to lose; report breadth |
@@ -112,9 +113,9 @@ PHASE 2 — operational eval: forward/live forecast scored SEPARATELY from backt
                            stale snapshot carries the true ragged edge -> no synthetic
                            lag-masking needed. Report backtest-vs-operational gap as a
                            headline (the real live capability).
-PHASE 3+ — roadmap:        TG real-time scrape · nowcast tier · quantile intervals ·
-                           auto-retrain (drift) · C/TCN/TFT compare · Hawkes ·
-                           spatial wave-propagation · multi-channel OSINT fusion
+PHASE 3 — uncertainty:     quantile intervals (Bq) + drift-triggered auto-retrain   [BUILT]
+PHASE 3+ — roadmap:        TG real-time scrape · nowcast tier · C/TCN/TFT compare ·
+                           Hawkes · spatial wave-propagation · multi-channel OSINT fusion
 ```
 
 Phase-2 duration accuracy is capped until Phase-3 real-time per-oblast counts land
@@ -139,13 +140,25 @@ kse-summer-sch/
 │   ├── index.py            master hourly UTC grid + leak-guard join
 │   ├── threat_map.py       model → threat-type table (7 channels, real-data verified)
 │   ├── features.py         lags, calendar, threat channels [planned]; UCDP prior [Phase 2]
-│   ├── model_b.py          4 direct LightGBM                       [planned]
-│   ├── model_a.py          Prophet baseline                        [planned]
-│   └── evaluate.py         temporal split, PR-AUC, calibration, heatmap [planned]
-├── tests/                  threat_map + index + loaders (46 passing)
+│   ├── model_b.py          4 direct LightGBM
+│   ├── model_bq.py         quantile LightGBM intervals (Bq, Phase 3)
+│   ├── model_a.py          Prophet baseline
+│   ├── drift.py            PSI feature-drift detection (Phase 3)
+│   ├── retrain.py          walk-forward auto-retrain harness (Phase 3)
+│   └── evaluate.py         temporal split, PR-AUC, calibration, heatmap, quantile metrics
+├── tests/                  threat_map + index + loaders + b/bq/a + evaluate + drift + retrain (86 passing)
 │   ├── test_threat_map.py
 │   ├── test_index.py
-│   └── test_loaders.py
+│   ├── test_loaders.py
+│   ├── test_features.py
+│   ├── test_model_a.py
+│   ├── test_model_b.py
+│   ├── test_model_bq.py
+│   ├── test_drift.py
+│   ├── test_retrain.py
+│   └── test_evaluate.py
+├── run_mvp.py              Phase-1 end-to-end (B + A + eval)
+├── run_phase3.py           Phase-3 end-to-end (Bq intervals + auto-retrain)
 ├── notebooks/
 │   └── eda.ipynb                                                   [planned]
 └── requirements.txt
@@ -203,9 +216,19 @@ MiG-31K airborne → Kinzhal ballistic ~10–40min (near-deterministic, country-
 horizons; Tu-95/Tu-160 from Engels → cruise wave 3–6h lead powers long horizons. Folded into
 structured data via the launch dataset's `launch_place` — no scrape needed for MVP.
 
+### Quantile intervals (Bq) and auto-retrain — Phase 3, BUILT
+Two MVP "accepted drawbacks" are now addressed:
+- **Uncertainty bands:** a probability has no spread to put a quantile on, so Bq regresses
+  the continuous **alert-fraction** over (t, t+H] (a real intensity in [0, 1]) at q10/q50/q90.
+  Per-row sort + clip removes quantile crossing. Scored by pinball + interval coverage/width
+  (the quantile analogue of PR-AUC/Brier). 30m/1h degenerate to the binary next hour (honest).
+- **Non-stationarity:** beyond recency weighting, an auto-retrain walk-forward (`retrain.py`)
+  operates the model forward block-by-block and adapts on **PSI feature drift** (`drift.py`),
+  scoring then adapting (no leak: purged trailing train windows, scored block never trained on).
+  Frozen-vs-adaptive pinball quantifies the drift cost the project's regime shift imposes.
+
 ### Accepted drawbacks
 - No native extrapolation (A patches trend at long horizon).
-- No free uncertainty bands (point estimate; quantile LightGBM = roadmap).
 - 6h event-timing ceiling (domain limit).
 - Single temporal holdout: one 8wk test window = one verdict, no variance estimate,
   one war regime. Honest + leak-safe but not robustness-proof; walk-forward = Phase 2.

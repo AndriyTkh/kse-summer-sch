@@ -24,6 +24,26 @@ WAR_START = "2022-02-24"   # grid origin
 HORIZONS = ["30m", "1h", "3h", "6h"]
 HORIZON_HOURS = {"30m": 0.5, "1h": 1, "3h": 3, "6h": 6}
 
+# --- quantile prediction intervals (Phase 3, Model Bq) -------------------
+# B outputs a point probability; Bq regresses the continuous alert-FRACTION over
+# (t, t+H] at several quantiles -> a calibrated uncertainty band per oblast×horizon.
+# Default 0.1/0.5/0.9 => a nominal 80% central interval [q10, q90] around the q50 median.
+QUANTILES: tuple[float, ...] = (0.1, 0.5, 0.9)
+PI_LOW, PI_HIGH = 0.1, 0.9          # band edges (nominal 80% coverage)
+
+# --- drift detection (Phase 3) -------------------------------------------
+# Population Stability Index thresholds (industry rule-of-thumb): PSI < 0.1 stable,
+# 0.1–0.25 moderate shift, > 0.25 significant. War is non-stationary (issue #6), so
+# the auto-retrain loop watches feature PSI between a reference window and live blocks.
+DRIFT_PSI_WARN = 0.10
+DRIFT_PSI_ALERT = 0.25
+
+# --- auto-retrain walk-forward (Phase 3) ---------------------------------
+# Online protocol: score the current model on each forward block, THEN adapt.
+RETRAIN_BLOCK_DAYS = 14            # forward evaluation block width
+RETRAIN_WINDOW_DAYS = 180         # trailing window each retrain fits on (matches recency half-life)
+RETRAIN_PERIOD_BLOCKS = 4         # cadence for the periodic baseline policy
+
 # --- UCDP leak-safe lag --------------------------------------------------
 # Impact data released annually; join as-of a lagged static per-oblast prior.
 # (Phase 2; UCDP GED replaces dropped ACLED. Kept as generic as-of lag knob.)

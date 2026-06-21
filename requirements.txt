@@ -6,6 +6,9 @@ prophet
 scikit-learn
 matplotlib
 
+# Phase 3 (quantile intervals Bq + drift/auto-retrain) — NO new deps:
+#   quantile regression = lightgbm objective="quantile"; PSI = numpy; metrics = sklearn/numpy.
+
 # Phase 2 (duration / survival)
 # lifelines
 
