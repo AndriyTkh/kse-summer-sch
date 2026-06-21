@@ -7,7 +7,7 @@ scikit-learn
 matplotlib
 
 # Phase 2 (duration / survival)
-# lifelines
+lifelines
 
 # Stretch (C/GRU comparison) — RTX 4060, not MVP
 # torch

@@ -37,6 +37,117 @@ def temporal_split(
     return train, test
 
 
+def walk_forward_splits(
+    df: pd.DataFrame,
+    n_folds: int = config.WALK_FORWARD_FOLDS,
+    test_weeks: int = config.TEST_WEEKS,
+    purge_hours: float = config.PURGE_HOURS,
+    train_weeks: int | None = None,
+):
+    """Rolling-origin folds: slide the test window back in time `n_folds` times.
+
+    The single `temporal_split` gives one verdict — one window, one war regime, no
+    spread. Walk-forward steps the cut backward instead, scoring many NON-OVERLAPPING
+    test windows so the set spans different regimes -> mean ± spread + drift (issue #6).
+
+    Fold 0's test window is the most recent `test_weeks` (the canonical holdout); each
+    later fold steps the test window back another `test_weeks`. Train = rows strictly
+    before the test start, minus the `purge_hours` label-bleed gap (targets span t->t+H,
+    same guard as `temporal_split`). Training is EXPANDING by default (all earlier
+    history, matching model_b's recency weighting); pass `train_weeks` for a fixed-width
+    SLIDING window. Folds whose train OR test side is empty are skipped.
+
+    Yields newest -> oldest as `(fold_index, train, test)`.
+    """
+    ts = df.index.get_level_values("ts_utc")
+    t_max, t_min = ts.max(), ts.min()
+    tw = pd.Timedelta(weeks=test_weeks)
+    purge = pd.Timedelta(hours=purge_hours)
+    for k in range(n_folds):
+        test_hi = t_max - k * tw
+        test_lo = test_hi - tw
+        train_hi = test_lo - purge
+        train_lo = (train_hi - pd.Timedelta(weeks=train_weeks)) if train_weeks else t_min
+        train = df[(ts >= train_lo) & (ts < train_hi)]
+        # Newest fold keeps the final hour (inclusive top); others are half-open so
+        # adjacent test windows never overlap.
+        upper = (ts <= test_hi) if k == 0 else (ts < test_hi)
+        test = df[(ts >= test_lo) & upper]
+        if train.empty or test.empty:
+            continue
+        yield k, train, test
+
+
+def walk_forward_eval(
+    fm: pd.DataFrame,
+    *,
+    n_folds: int = config.WALK_FORWARD_FOLDS,
+    test_weeks: int = config.TEST_WEEKS,
+    horizons=None,
+    train_weeks: int | None = None,
+    progress: bool = False,
+) -> pd.DataFrame:
+    """Run Model B across rolling-origin folds; return per-(fold, horizon) PR-AUC.
+
+    For each fold: fit the 4 direct LightGBM on the train side, score the test side,
+    record PR-AUC, base rate and lift per horizon. Calibration is omitted on purpose —
+    PR-AUC is a ranking metric and isotonic is monotone, so it cannot change the number
+    we are estimating the variance of; the calibrator only matters for the headline
+    holdout (run_mvp). A fold/horizon with no positives is skipped (PR-AUC undefined).
+
+    Returns a tidy long frame `[fold, horizon, n_test, base, pr_auc, lift]`; feed it to
+    `walk_forward_summary` for the mean ± spread the single holdout cannot give.
+    """
+    from . import model_b   # lazy: keeps lightgbm off the pure-metrics import path
+
+    horizons = horizons or config.HORIZONS
+    rows = []
+    for k, train, test in walk_forward_splits(
+        fm, n_folds=n_folds, test_weeks=test_weeks, train_weeks=train_weeks
+    ):
+        models = model_b.train_all(train, train, horizons=horizons)
+        probs = model_b.predict_all(models, test)
+        for h in horizons:
+            y = model_b.make_target(test, h).reindex(test.index)
+            m = y.notna()
+            yt = y[m].astype(int)
+            if yt.nunique() < 2:        # all-positive or all-negative -> PR-AUC undefined
+                continue
+            base = float(yt.mean())
+            ap = pr_auc(yt, probs.loc[m, h])
+            rows.append({
+                "fold": k, "horizon": h, "n_test": int(m.sum()),
+                "base": base, "pr_auc": ap, "lift": ap / base if base else float("nan"),
+            })
+            if progress:
+                print(f"  fold {k} {h:>4}  n={int(m.sum()):>6}  base={base:.3f}  PR-AUC={ap:.3f}")
+    return pd.DataFrame(rows)
+
+
+def walk_forward_summary(folds: pd.DataFrame) -> pd.DataFrame:
+    """Aggregate per-fold walk-forward results to mean ± spread per horizon.
+
+    Input is the `walk_forward_eval` long frame. Returns one row per horizon with
+    PR-AUC mean/std/min/max, mean base and lift, and the fold count — the robustness
+    estimate (does B hold across regimes, or was the holdout lucky?). Horizons keep
+    their canonical config order.
+    """
+    if folds.empty:
+        return pd.DataFrame()
+    g = folds.groupby("horizon")
+    out = g.agg(
+        n_folds=("pr_auc", "size"),
+        pr_auc_mean=("pr_auc", "mean"),
+        pr_auc_std=("pr_auc", "std"),
+        pr_auc_min=("pr_auc", "min"),
+        pr_auc_max=("pr_auc", "max"),
+        base_mean=("base", "mean"),
+        lift_mean=("lift", "mean"),
+    )
+    order = [h for h in config.HORIZONS if h in out.index]
+    return out.loc[order]
+
+
 def pr_auc(y_true, y_score) -> float:
     """Average precision (area under PR curve). Primary metric (issue #5)."""
     return float(average_precision_score(y_true, y_score))

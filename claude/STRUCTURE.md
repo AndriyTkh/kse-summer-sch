@@ -96,22 +96,26 @@ Threat-type is the highest-leverage feature after raw lags: each type powers a d
 ## 6. Phasing
 
 ```
-PHASE 1 — MVP (2 days):   B forecasting + threat-features + A baseline
-PHASE 2 — duration:        survival (lifelines), reuses Phase-1 covariates
-PHASE 2 — evaluation:      walk-forward backtest (rolling-origin CV) replacing the
+PHASE 1 — MVP (2 days):   B forecasting + threat-features + A baseline              ✅ DONE
+PHASE 2 — evaluation:      walk-forward backtest (rolling-origin CV) replacing the   ✅ DONE
                            single temporal holdout: slide the train/test cut forward,
                            score many folds -> mean ± spread + drift across war regimes
-PHASE 2 — operational eval: forward/live forecast scored SEPARATELY from backtest.
+PHASE 2 — nowcast:         forecast_now operational entrypoint — train on all data,   ✅ DONE
+                           emit next-6h per-oblast calibrated probabilities at the
+                           grid edge. Ragged-right-edge caveat carried in output.
+PHASE 2 — operational eval: forward/live forecast scored SEPARATELY from backtest.  ✅ DONE (simulated)
                            Backtest overstates live perf: not leakage (timestamp guard
                            is correct) but DATA AVAILABILITY — recent rows complete in
                            the historical CSV are missing/partial live (source publish
-                           lag = ragged right edge / nowcast problem). Honest test =
-                           real data VINTAGE: snapshot the sources at forecast time
-                           (e.g. before overnight refresh) into a separate dataset,
-                           predict next 6h, validate vs the later-updated source. The
-                           stale snapshot carries the true ragged edge -> no synthetic
-                           lag-masking needed. Report backtest-vs-operational gap as a
-                           headline (the real live capability).
+                           lag = ragged right edge / nowcast problem). Simulated vintage:
+                           degrade threat/tempo features by zeroing last N hours of the
+                           test fold, sweep multiple lag scenarios (3/6/12/24h), report
+                           backtest-vs-degraded PR-AUC gap per horizon. Real vintage
+                           snapshots (Phase 3 data pipeline) will replace the simulation.
+PHASE 2 — duration:        survival (lifelines), reuses Phase-1 covariates           ✅ DONE
+                           Kaplan-Meier baseline + Cox PH with hourly features at
+                           alert start. Censoring-aware (issue #7). Accuracy capped
+                           until Phase-3 per-oblast swarm counts.
 PHASE 3+ — roadmap:        TG real-time scrape · nowcast tier · quantile intervals ·
                            auto-retrain (drift) · C/TCN/TFT compare · Hawkes ·
                            spatial wave-propagation · multi-channel OSINT fusion
@@ -135,21 +139,37 @@ kse-summer-sch/
 ├── artifacts/              models, plots, metrics (gitignored)     [planned]
 ├── src/
 │   ├── config.py           paths, grid, horizons, oblast codelist + aliases
-│   ├── loaders.py          massive-attacks + missile_daily done; alerts stubbed (UCDP Phase 2)
+│   ├── loaders.py          Vadimkin alerts + massive-attacks + missile_daily
 │   ├── index.py            master hourly UTC grid + leak-guard join
 │   ├── threat_map.py       model → threat-type table (7 channels, real-data verified)
-│   ├── features.py         lags, calendar, threat channels [planned]; UCDP prior [Phase 2]
-│   ├── model_b.py          4 direct LightGBM                       [planned]
-│   ├── model_a.py          Prophet baseline                        [planned]
-│   ├── evaluate.py         temporal split, PR-AUC, calibration, heatmap [planned]
+│   ├── features.py         lags, calendar, threat channels; UCDP prior [Phase 2]
+│   ├── model_b.py          4 direct LightGBM
+│   ├── model_a.py          Prophet baseline
+│   ├── forecast.py         operational nowcast — forecast_now at the grid edge
+│   ├── operational_eval.py simulated vintage eval — backtest-vs-live gap quantification
+│   ├── survival.py         Phase-2 duration: KM + Cox PH alert time-to-all-clear
+│   ├── evaluate.py         temporal split + walk-forward CV, PR-AUC, calibration, heatmap
 │   └── export_predictions.py  runs A+B → predictions.json + metrics.json
 ├── viz/                    React + MapLibre dashboard (build passes)
 │   ├── public/             ukraine-oblasts.geojson + generated JSONs
 │   └── src/                App, AlertMap, HorizonToggle, MetricsPanel, RegionPanel
-├── tests/                  threat_map + index + loaders (46 passing)
+├── run_mvp.py              Phase-1 headline: single-holdout B + A + artifacts
+├── run_walkforward.py      Phase-2: rolling-origin CV (mean ± spread + drift)
+├── run_forecast.py         Phase-2: emit next-6h per-oblast nowcast (calibrated)
+├── run_operational_eval.py Phase-2: sweep source-lag scenarios, report PR-AUC gap
+├── run_survival.py         Phase-2: KM + Cox PH duration model, C-index + MAE
+├── tests/                  86 passing, 6 skipped (Prophet) — full pipeline + Phase-2
 │   ├── test_threat_map.py
 │   ├── test_index.py
-│   └── test_loaders.py
+│   ├── test_loaders.py
+│   ├── test_features.py
+│   ├── test_model_a.py
+│   ├── test_model_b.py
+│   ├── test_evaluate.py
+│   ├── test_walk_forward.py    Phase-2: rolling-origin folds + B eval/summary
+│   ├── test_forecast.py        Phase-2: forecast_now edge nowcast
+│   ├── test_operational_eval.py Phase-2: degradation + gap direction
+│   └── test_survival.py        Phase-2: survival dataset, KM, Cox, temporal split
 ├── notebooks/
 │   └── eda.ipynb                                                   [planned]
 └── requirements.txt

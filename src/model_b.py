@@ -79,7 +79,9 @@ def train_horizon(X: pd.DataFrame, y: pd.Series, horizon: str) -> LGBMClassifier
 
     pos = int(yt.sum())
     neg = int(len(yt) - pos)
-    spw = (neg / pos) if pos else 1.0
+    # Need both classes for a meaningful re-balance; a saturated slice (all-pos or
+    # all-neg, e.g. a degenerate walk-forward fold) -> spw 1.0 (LightGBM rejects <=0).
+    spw = (neg / pos) if pos and neg else 1.0
 
     model = LGBMClassifier(scale_pos_weight=spw, **_LGBM_PARAMS)
     model.fit(Xt, yt, sample_weight=_recency_weights(Xt.index))
