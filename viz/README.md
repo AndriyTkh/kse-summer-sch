@@ -23,11 +23,12 @@ The dashboard reads three files from `public/`:
 | `predictions.json` | `python -m src.export_predictions` | latest per-oblast probability per horizon |
 | `metrics.json` | `python -m src.export_predictions` | aggregate + per-oblast PR-AUC / calibration, B-vs-A |
 
-`predictions.json` / `metrics.json` currently hold **sample data** so the UI runs
-standalone. Regenerate real values from the repo root once models are trained:
+`predictions.json` / `metrics.json` are produced by the export script (real model
+output, committed so the UI runs standalone). Regenerate from the repo root any
+time data or models change:
 
 ```bash
-python -m src.export_predictions
+PYTHONUTF8=1 .venv/Scripts/python -m src.export_predictions
 ```
 
 > The bundled `ukraine-oblasts.geojson` is a **simplified placeholder** (hex-ish
