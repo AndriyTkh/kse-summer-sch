@@ -18,6 +18,16 @@
 
 ---
 
+## Phase 2 — DONE ✅
+
+- [x] Walk-forward backtest (rolling-origin CV) replacing single holdout — `evaluate.py`, `run_walkforward.py`.
+- [x] Operational nowcast at the grid edge (`forecast_now`) — `forecast.py`, `run_forecast.py`.
+- [x] Simulated-vintage operational eval (backtest-vs-live PR-AUC gap) — `operational_eval.py`, `run_operational_eval.py`.
+- [x] Duration model: Kaplan-Meier + Cox PH, censoring-aware — `survival.py`, `run_survival.py`.
+- [x] Viz dashboard (React + MapLibre) wired to P1/P2 JSON exports — `viz/`, `viz_export.py`.
+
+---
+
 ## Phase 3 definition of done
 
 - [ ] **Model Bq** — quantile LightGBM on the alert-FRACTION target → per oblast×horizon
