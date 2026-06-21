@@ -13,6 +13,27 @@ export interface NowcastData extends PredictionSource {
   calibrated: boolean;
 }
 
+/** Onset / timing model (alt approach) — export_predictions.py → onset.json.
+ *  `predictions[oblast][H]` = P(a NEW alert STARTS within H, from a quiet state):
+ *  a CDF over horizons that the map turns into a time-to-alert colour + a distribution
+ *  chart. Distinct from B's "is an alert active" probability. */
+export interface OnsetData {
+  generated_utc: string;
+  forecast_base_utc: string;
+  horizons: string[];
+  horizon_hours: Record<Horizon, number>;
+  test_weeks: number;
+  predictions: Record<string, Record<Horizon, number | null>>;
+  aggregate: Record<
+    Horizon,
+    { base_rate: number; pr_auc: number; lift: number | null; n_samples: number }
+  >;
+  per_oblast: Record<
+    string,
+    Record<Horizon, { pr_auc: number; base_rate: number; mean_pred: number; n_samples: number }>
+  >;
+}
+
 /** Walk-forward rolling-origin CV summary (run_walkforward.py → walkforward.json). */
 export interface WalkForwardData {
   generated_utc: string;
@@ -45,6 +66,43 @@ export interface OperationalData {
       by_lag: Record<string, { pr_auc_degraded: number; gap_pct: number }>;
     }
   >;
+}
+
+/** Quantile prediction intervals — Model Bq (run_phase3.py → intervals.json). */
+export interface IntervalData {
+  generated_utc: string;
+  forecast_base_utc: string;
+  test_weeks: number;
+  horizons: string[];
+  nominal_coverage: number;
+  by_horizon: Record<
+    string,
+    { pinball: number; coverage: number; width: number; base_fraction: number }
+  >;
+  predictions: Record<
+    string,
+    Record<Horizon, { q10: number; q50: number; q90: number } | null>
+  >;
+}
+
+/** Drift-triggered auto-retrain trajectory (run_phase3.py → drift.json). */
+export interface DriftData {
+  generated_utc: string;
+  horizon: string;
+  psi_warn: number;
+  psi_alert: number;
+  block_days: number;
+  policies: Record<
+    string,
+    { mean_pinball: number; retrains: number; mean_coverage: number }
+  >;
+  trajectory: {
+    block_start: string;
+    never: number;
+    periodic: number;
+    drift: number;
+    drift_retrained: boolean;
+  }[];
 }
 
 /** Alert-duration survival model (run_survival.py → survival.json). */

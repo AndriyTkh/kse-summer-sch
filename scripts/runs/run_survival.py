@@ -4,12 +4,18 @@ Fits Kaplan-Meier (non-parametric baseline) and Cox proportional-hazards (with
 covariates from the hourly feature matrix at alert-start time). Reports median
 alert duration, C-index, and top hazard-ratio covariates.
 
-Run: PYTHONUTF8=1 python run_survival.py
+Run: PYTHONUTF8=1 python scripts/runs/run_survival.py
 """
 
 from __future__ import annotations
 
+import sys
 import time
+from pathlib import Path
+
+# Partial moved under scripts/runs/ — put repo root on sys.path so `from src import`
+# resolves when run standalone (the combined base run.py imports src directly).
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import matplotlib
 matplotlib.use("Agg")
@@ -27,8 +33,7 @@ def main() -> None:
     waves = loaders.load_massive_attacks()
     daily = loaders.load_missile_daily()
 
-    start = alerts["start_utc"].min().floor("h").tz_convert("UTC").tz_localize(None)
-    grid = index.build_master_index(start=start)
+    grid = index.build_master_index()  # starts at config.GRID_START (2023-07)
     grid = index.expand_alerts_to_grid(grid, alerts)
     fm = features.build_feature_matrix(grid, {"waves": waves, "daily": daily})
     print(f"features {fm.shape[1]} cols  {len(fm):,} rows  [{time.time()-t0:.0f}s]")

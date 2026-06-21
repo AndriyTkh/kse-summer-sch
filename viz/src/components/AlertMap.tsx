@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { probabilityToColor } from "../utils/colorScale";
+import { probabilityToColor, onsetTiming, timingColor } from "../utils/colorScale";
 import type { Horizon } from "../utils/colorScale";
-import type { PredictionSource } from "../types";
+import type { PredictionSource, OnsetData } from "../types";
+import type { MapMode } from "./ModeToggle";
 
 interface Props {
   predictions: PredictionSource;
@@ -11,6 +12,8 @@ interface Props {
   activeAlerts: Set<string>;
   selected: string | null;
   onSelect: (code: string | null) => void;
+  mode: MapMode;
+  onset: OnsetData | null;
 }
 
 // Base style: dark background + a CARTO dark raster basemap underneath the
@@ -38,7 +41,7 @@ const BASE_STYLE: maplibregl.StyleSpecification = {
   ],
 };
 
-export function AlertMap({ predictions, horizon, activeAlerts, selected, onSelect }: Props) {
+export function AlertMap({ predictions, horizon, activeAlerts, selected, onSelect, mode, onset }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -143,19 +146,34 @@ export function AlertMap({ predictions, horizon, activeAlerts, selected, onSelec
     const map = mapRef.current;
     if (!map || !loaded) return;
 
-    for (const code of Object.keys(predictions.predictions)) {
-      const prob = predictions.predictions[code]?.[horizon as Horizon] ?? 0;
+    const onsetMode = mode === "onset" && !!onset;
+    // Source of truth for which oblasts to paint (both share the same code set).
+    const codes = Object.keys((onsetMode ? onset! : predictions).predictions);
+
+    for (const code of codes) {
+      let prob: number;
+      let fillColor: string;
+      if (onsetMode) {
+        // Timing mode: colour by SOONEST time-to-alert; opacity by overall onset
+        // likelihood in the 6h window so calm/unlikely zones fade to the basemap.
+        const t = onsetTiming(onset!.predictions[code]);
+        fillColor = timingColor(t.etaHours);
+        prob = t.reach;
+      } else {
+        prob = predictions.predictions[code]?.[horizon as Horizon] ?? 0;
+        fillColor = probabilityToColor(prob);
+      }
       map.setFeatureState(
         { source: "oblasts", id: code },
         {
           prob,
-          fillColor: probabilityToColor(prob),
+          fillColor,
           alerting: activeAlerts.has(code),
           selected: code === selected,
         },
       );
     }
-  }, [predictions, horizon, activeAlerts, selected, loaded]);
+  }, [predictions, horizon, activeAlerts, selected, loaded, mode, onset]);
 
   return (
     <div className="map-wrap">

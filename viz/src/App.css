@@ -203,3 +203,26 @@ html, body, #root {
   background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
 }
 .legend-alert { margin-left: auto; color: #f87171; }
+
+/* timing-mode legend */
+.legend-timing { display: inline-flex; align-items: center; gap: 0.3rem; }
+.legend-swatch {
+  width: 14px; height: 14px; border-radius: 3px; display: inline-block;
+}
+
+/* onset region: time-to-alert banner */
+.eta-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: 6px;
+  background: var(--panel);
+  font-size: 0.85rem;
+}
+.eta-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.eta-sub { color: var(--dim); font-size: 0.72rem; width: 100%; }

@@ -156,10 +156,44 @@ def load_missile_daily(path=None) -> pd.DataFrame:
     return daily.reindex(full, fill_value=0).rename_axis("date_utc").reset_index()
 
 
-def load_ucdp(path=None) -> pd.DataFrame:
-    """UCDP GED geolocated fatal events -> per-oblast impact prior.
+# GED `adm_1` spellings that don't survive normalize_oblast (alias-map mismatches +
+# full-name city/AR forms). Keys are the raw adm_1 lowercased. Everything else
+# (Donetsk/Kharkiv/Kyiv oblast/...) the generic normalize_oblast already covers.
+_UCDP_ADM1: dict[str, str] = {
+    "zaporizhzhya oblast": "zaporizka",          # alias has 'zaporizhzhia'
+    "mykolayiv oblast": "mykolaivska",           # alias has 'mykolaiv'
+    "odessa oblast": "odeska",                    # alias has 'odesa'
+    "vinnytsya oblast": "vinnytska",              # alias has 'vinnytsia'
+    "autonomous republic of crimea": "crimea",
+    "sevastopol city state administration": "sevastopol",
+    "kyiv special republican city": "kyiv-city",
+    "kiev special republican city": "kyiv-city",
+}
 
-    Phase 2 (replaces dropped ACLED). Not wired in MVP; features.add_ucdp_features
-    stays a no-op until this is built. Join MUST use UCDP_LAG_DAYS (issue #2).
+
+def _ucdp_oblast(name) -> str | None:
+    """GED adm_1 -> ADM1 code: dedicated overrides first, then normalize_oblast."""
+    if pd.isna(name):
+        return None
+    key = str(name).strip().lower()
+    return _UCDP_ADM1.get(key) or normalize_oblast(name)
+
+
+def load_ucdp(path=None) -> pd.DataFrame:
+    """UCDP GED geolocated fatal events -> per-oblast yearly impact (deaths + events).
+
+    Returns tidy [oblast, year, deaths, events]: `deaths` = sum of `best` fatality
+    estimates, `events` = event count, per ADM1 oblast per calendar year. Annual data
+    (2014–2024); the LAG into features is handled in features.add_ucdp_features (issue #2:
+    a row in year Y reads only years < Y, well beyond UCDP_LAG_DAYS — annual release).
+    National/unmapped adm_1 rows (incl. NaN) are dropped.
     """
-    raise NotImplementedError("UCDP GED is Phase 2 (not wired in MVP)")
+    path = path or config.DATA_DIR / "ged251_ukraine.csv"
+    df = pd.read_csv(path, usecols=["year", "adm_1", "best"])
+    df = df.assign(oblast=df["adm_1"].map(_ucdp_oblast)).dropna(subset=["oblast"])
+    agg = (
+        df.groupby(["oblast", "year"])
+        .agg(deaths=("best", "sum"), events=("best", "size"))
+        .reset_index()
+    )
+    return agg

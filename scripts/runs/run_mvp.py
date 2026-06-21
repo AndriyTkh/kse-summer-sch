@@ -3,13 +3,19 @@
 Headline output for Phase-1 B (LightGBM forecasting). Leak-safe by construction
 (features < t, temporal split). Prophet baseline (A) is a separate, deferred part.
 
-Run: PYTHONUTF8=1 .venv/Scripts/python run_mvp.py
+Run: PYTHONUTF8=1 .venv/Scripts/python scripts/runs/run_mvp.py
 Writes calibration + heatmap PNGs to artifacts/ (gitignored).
 """
 
 from __future__ import annotations
 
+import sys
 import time
+from pathlib import Path
+
+# Partial moved under scripts/runs/ — put repo root on sys.path so `from src import`
+# resolves when run standalone (the combined base run.py imports src directly).
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import matplotlib
 matplotlib.use("Agg")
@@ -29,8 +35,7 @@ def main() -> None:
 
     # Start at first recorded alert (pre-data hours would be false zeros).
     # build_master_index re-localizes to UTC, so hand it a naive wall-clock.
-    start = alerts["start_utc"].min().floor("h").tz_convert("UTC").tz_localize(None)
-    grid = index.build_master_index(start=start)
+    grid = index.build_master_index()  # starts at config.GRID_START (2023-07)
     grid = index.expand_alerts_to_grid(grid, alerts)
     print(f"grid {len(grid):,} rows  ({grid.index.get_level_values('oblast').nunique()} oblasts)"
           f"  positives {int(grid.alert.sum()):,} ({grid.alert.mean():.3f})  [{time.time()-t0:.0f}s]")

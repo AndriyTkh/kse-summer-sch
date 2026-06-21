@@ -19,6 +19,7 @@ Grid contract: MultiIndex (oblast, ts_utc), hourly UTC, with a raw `alert` colum
 
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 
 from . import config
@@ -26,7 +27,6 @@ from . import config
 # Trailing windows (hours) for rolling alert history and threat activity.
 _LAG_HOURS = (1, 3, 6, 24)
 _ROLL_HOURS = (3, 6, 24, 168)        # 168 = 7d
-_THREAT_WINDOWS = (3, 6, 24)
 _NIGHT_HOURS = set(range(22, 24)) | set(range(0, 6))   # 22:00–05:59 UTC
 
 
@@ -98,8 +98,24 @@ def _explode_waves(waves: pd.DataFrame, oblasts) -> pd.DataFrame:
     return long
 
 
-def add_threat_features(df: pd.DataFrame, waves: pd.DataFrame) -> pd.DataFrame:
-    """Per-channel launch/wave counts over trailing windows, lag-shifted (< t)."""
+def add_threat_features(
+    df: pd.DataFrame,
+    waves: pd.DataFrame,
+    *,
+    channels: tuple[str, ...] | None = None,
+    values: tuple[str, ...] | None = None,
+    windows: tuple[int, ...] | None = None,
+) -> pd.DataFrame:
+    """Per-channel launch/wave counts over trailing windows, lag-shifted (< t).
+
+    Allowlist (`channels`/`values`/`windows`) defaults to the module-level config
+    (empty channels -> no threat cols, the deprecated whether-model state). The onset
+    model passes its revival allowlist explicitly so it can re-enable threat without
+    mutating the shared config the whether-model reads.
+    """
+    channels = config.THREAT_CHANNELS if channels is None else channels
+    values = config.THREAT_VALUES if values is None else values
+    windows = config.THREAT_WINDOWS if windows is None else windows
     out = df.sort_index()
     oblasts = out.index.get_level_values("oblast").unique()
     long = _explode_waves(waves, oblasts)
@@ -121,9 +137,12 @@ def add_threat_features(df: pd.DataFrame, waves: pd.DataFrame) -> pd.DataFrame:
 
     g = wide.groupby(level="oblast", sort=False)
     for col in wide.columns:
+        ch, val = col[len("thr_"):].rsplit("_", 1)     # 'thr_drone-strike_launched'
+        if ch not in channels or val not in values:
+            continue                                   # allowlist prune (Phase 4)
         shifted = g[col].shift(1)                      # exclude current hour
         sg = shifted.groupby(level="oblast", sort=False)
-        for w in _THREAT_WINDOWS:
+        for w in windows:
             out[f"{col}_{w}h"] = sg.rolling(w, min_periods=1).sum().reset_index(level=0, drop=True)
     return out
 
@@ -146,24 +165,65 @@ def add_tempo_features(df: pd.DataFrame, daily: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_ucdp_features(df: pd.DataFrame, ucdp=None) -> pd.DataFrame:
-    """No-op: UCDP is Phase 2 (issue #2 stays wired in spec only)."""
-    return df
+    """Per-oblast UCDP impact prior, leak-safe lagged (issue #2).
+
+    Adds `ucdp_deaths_prior` / `ucdp_events_prior`: log1p of the CUMULATIVE UCDP
+    fatalities / events in that oblast over all years STRICTLY BEFORE the row's year.
+    UCDP is released annually, so reading only years < t.year is conservatively leak-safe
+    (far beyond UCDP_LAG_DAYS). This is the per-oblast location signal the pooled model
+    otherwise lacks — frontline oblasts (Donetsk, Kharkiv…) carry a high static prior,
+    western oblasts ~0. `ucdp=None`/empty -> zero columns (kept so the matrix is stable).
+    """
+    out = df
+    ts_year = out.index.get_level_values("ts_utc").year
+    oblast = out.index.get_level_values("oblast")
+
+    if ucdp is None or len(ucdp) == 0:
+        out["ucdp_deaths_prior"] = 0.0
+        out["ucdp_events_prior"] = 0.0
+        return out
+
+    u = ucdp.sort_values(["oblast", "year"]).copy()
+    u["cum_deaths"] = u.groupby("oblast")["deaths"].cumsum()
+    u["cum_events"] = u.groupby("oblast")["events"].cumsum()
+
+    # Dense (oblast x year) cumulative grid, forward-filled across gap years so any
+    # query year resolves to the most recent cumulative on or before it.
+    years = range(int(u["year"].min()), int(ts_year.max()))  # up to row-year - 1
+    full = pd.MultiIndex.from_product(
+        [list(config.OBLAST_CODES), list(years)], names=["oblast", "year"]
+    )
+    cum = (
+        u.set_index(["oblast", "year"])[["cum_deaths", "cum_events"]]
+        .reindex(full)
+        .groupby(level="oblast").ffill()
+        .fillna(0.0)
+    )
+
+    # Each row reads the prior year's cumulative (strictly < its own year).
+    keys = pd.MultiIndex.from_arrays([oblast, ts_year - 1], names=["oblast", "year"])
+    out["ucdp_deaths_prior"] = np.log1p(cum["cum_deaths"].reindex(keys).fillna(0.0).to_numpy())
+    out["ucdp_events_prior"] = np.log1p(cum["cum_events"].reindex(keys).fillna(0.0).to_numpy())
+    return out
 
 
 def build_feature_matrix(grid: pd.DataFrame, sources: dict) -> pd.DataFrame:
     """Run all feature builders in order, return model-ready matrix.
 
     `grid` must already carry the raw `alert` column (index.expand_alerts_to_grid).
-    `sources` keys: 'waves' (massive attacks), 'daily' (missile tempo), optional 'ucdp'.
+    `sources` keys: 'waves' (massive attacks), 'daily' (missile tempo), optional 'ucdp',
+    optional 'threat' (a {channels,values,windows} dict overriding the config allowlist —
+    the onset model passes its revival set; default None = config = empty for whether).
     Leak-safety is structural (shifts only); see module docstring.
     """
     if "alert" not in grid.columns:
         raise ValueError("grid needs raw 'alert' column — run expand_alerts_to_grid first")
 
+    threat = sources.get("threat") or {}
     out = add_lag_features(grid)
     out = add_calendar_features(out)
     if sources.get("waves") is not None:
-        out = add_threat_features(out, sources["waves"])
+        out = add_threat_features(out, sources["waves"], **threat)
     if sources.get("daily") is not None:
         out = add_tempo_features(out, sources["daily"])
     out = add_ucdp_features(out, sources.get("ucdp"))
